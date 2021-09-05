@@ -18,6 +18,8 @@ import Pannel from './Pannel'
 import { UserContext , UserProvider } from '../contexts/UserContext';
 import { ToastProvider, useToasts } from 'react-toast-notifications';
 import { DataContext , DataProvider } from '../contexts/DataContext';
+import Nav from './Nav';
+import AnimateNav from './AnimateNav';
 
 
 
@@ -30,6 +32,7 @@ const App = (props) => {
         <DataProvider>
         <ToastProvider>
         <UserProvider>
+        <AnimateNav />
         <Router>
             <Switch>
                 <Route path={base + '/login' }  render={(props) =>  <Sign login={true} {...props} />}>

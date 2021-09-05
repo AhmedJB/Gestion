@@ -53,6 +53,7 @@ body{
     min-height: 100vh; */
     background-color:var(--background);
     font-family: 'Montserrat', sans-serif;
+    padding:30px 0px;
 }
 
 #lr{

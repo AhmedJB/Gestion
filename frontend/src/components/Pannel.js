@@ -7,6 +7,8 @@ import { useToasts } from "react-toast-notifications";
 import Chart from "react-apexcharts";
 import styled from 'styled-components';
 import Nav from "./Nav";
+import AnimateNav from "./AnimateNav";
+
 
 function Pannel(props) {
   const { addToast } = useToasts();
@@ -94,16 +96,7 @@ function Pannel(props) {
     setData(obj2);
   }
 
-  function logout() {
-    let obj = { ...User };
-    obj.logged = false;
-    obj.username = null;
-    obj.email = null;
-    sessionStorage.removeItem("accessToken");
-    sessionStorage.removeItem("refreshToken");
-    setUser(obj);
-  }
-
+  
   async function updateVidiq() {
     let username = document.getElementById("account_email").value;
     let password = document.getElementById("account_password").value;
@@ -179,7 +172,7 @@ function Pannel(props) {
     
 
     
-  <Nav />
+   
 
 <div className='row'>
   <Card width="90%" height="500px">
