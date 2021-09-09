@@ -7,20 +7,15 @@ import { useDimensions } from "./use-dimensions";
 import { MenuToggle } from "./MenuToggle";
 import { Navigation } from "./Navigation";
 import styled from 'styled-components';
+import {logout} from '../helper';
+
+import { useDetectClickOutside } from 'react-detect-click-outside';
 
 
 
 function AnimateNav(props){
     const [User, setUser] = useContext(UserContext);
-    function logout() {
-        let obj = { ...User };
-        obj.logged = false;
-        obj.username = null;
-        obj.email = null;
-        sessionStorage.removeItem("accessToken");
-        sessionStorage.removeItem("refreshToken");
-        setUser(obj);
-      }
+    
 
     const sidebar = {
         open: (height = 1000) => ({
@@ -30,6 +25,7 @@ function AnimateNav(props){
             stiffness: 20,
             restDelta: 2
           },
+         
           
         }),
         closed: {
@@ -44,26 +40,89 @@ function AnimateNav(props){
         }
       };
 
+    const navbar = {
+      open : {
+        zIndex:10
+      },
+      closed : {
+        zIndex:0,
+        transition : {
+          delay:1
+        }
+      }
+    }
+
+    const layer = {
+      open : {
+        opacity:1,
+        transition:{
+          opacity:{
+            delay:0
+          }
+        },
+
+        zIndex:9
+      },
+      closed : {
+        opacity:0,
+        
+        zIndex:0,
+        transition : {
+          opacity:{
+            delay:0.8
+          },
+          zIndex:{
+            delay:1
+          }
+          
+        }
+      }
+    }
+
+    function handleClick(){
+      if (isOpen){
+        toggleOpen();
+      }
+      
+    }
+
       const [isOpen, toggleOpen] = useCycle(false, true);
   const containerRef = useRef(null);
   const { height } = useDimensions(containerRef);
-
+  const reff = useDetectClickOutside({ onTriggered: handleClick});
   
   return (
-    <motion.nav
+
+    <Fragment>
+      <motion.div
+    id="layer"
+    initial={false}
+    animate={isOpen ? "open" : "closed"}
+    /* className={isOpen ? "open" : "closed"} */
+    variants={layer}
+    onClick={handleClick}
+    
+      >
+
+      </motion.div>
+<motion.nav
       id="sidebar"
       initial={false}
       animate={isOpen ? "open" : "closed"}
-      className={isOpen ? "open" : "closed"}
+      /* className={isOpen ? "open" : "closed"} */
+      variants={navbar}
       custom={height}
       ref={containerRef}
+      
     >
         
-      <motion.div className="background" variants={sidebar} />
+      <motion.div className="background" variants={sidebar}  />
       <Navigation />
       <MenuToggle toggle={() => toggleOpen()} />
 
     </motion.nav>
+    </Fragment>
+    
   );
 
     /* return (

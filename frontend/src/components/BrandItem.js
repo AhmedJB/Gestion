@@ -43,7 +43,7 @@ export const BrandItem =  (props) => {
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
     >
-      <Brand>Brand Title</Brand>
+      <img className='logo' src='/static/pics/logo.svg' alt='logo'></img>
     </motion.li>
   );
 };

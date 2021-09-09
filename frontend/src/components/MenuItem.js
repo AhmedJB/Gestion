@@ -41,7 +41,7 @@ export const MenuItem = ({ i }) => {
       }
     
 
-
+    
   const style = { border: `2px solid ${colors[i]}`, color: `${colors[i]}` };
   const style2 = { border: `2px solid ${colors[i]}`, padding:'10px' , color: `${colors[i]}`}
   const ic = icons[i];
@@ -55,7 +55,7 @@ export const MenuItem = ({ i }) => {
       <div className="icon-placeholder" style={style} > {ic}  </div>
 
       <div className="text-placeholder" style={style2}>{text[i]}  </div>
-      
+      </Link>
     </motion.li>
   );
 };

@@ -8,6 +8,7 @@ import Chart from "react-apexcharts";
 import styled from 'styled-components';
 import Nav from "./Nav";
 import AnimateNav from "./AnimateNav";
+import {logout} from '../helper';
 
 
 function Pannel(props) {
@@ -61,7 +62,7 @@ function Pannel(props) {
         setUser(obj);
         return obj;
       }else {
-        logout();
+        logout(setUser,User);
       }
     }
 
@@ -169,7 +170,7 @@ function Pannel(props) {
 
   const html = (
   <Fragment>
-    
+    <AnimateNav />
 
     
    

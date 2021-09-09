@@ -1,4 +1,4 @@
-const api = 'http://127.0.0.1:8000/api/'
+const api = '/api/'
 var fileDownload = require('js-file-download');
 
 function set_header(token = null){
@@ -260,3 +260,14 @@ export async function isLogged(){
     let resp = await req('session');
     return resp;
 }
+
+
+export function logout(setUser,User) {
+    let obj = { ...User };
+    obj.logged = false;
+    obj.username = null;
+    obj.email = null;
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
+    setUser(obj);
+  }

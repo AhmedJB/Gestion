@@ -17,3 +17,10 @@ function Pannel(props) {
     const [User, setUser] = useContext(UserContext);
     const [Data, setData] = useContext(DataContext);
     
+    return (
+        <h1>Stock</h1>
+    )
+
+}
+
+export default Pannel;
