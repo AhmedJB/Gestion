@@ -20,6 +20,15 @@ import { ToastProvider, useToasts } from 'react-toast-notifications';
 import { DataContext , DataProvider } from '../contexts/DataContext';
 import Nav from './Nav';
 import AnimateNav from './AnimateNav';
+import Supplier from './Supplier';
+import Stock from './Stock';
+
+
+
+
+
+
+
 
 
 
@@ -42,8 +51,12 @@ const App = (props) => {
                 <Route path={ base + '/register'  } render={(props) =>  <Sign login={false} {...props} />}>
                     
                 </Route>
+                
 
-                <Route path={ base + '/vente'  } render={(props) =>  <Vente  {...props} />}>
+                <Route path={ base + '/supplier'  } render={(props) =>  <Supplier  {...props} />}>
+                    
+                </Route>
+                <Route path={ base + '/supply'  } render={(props) =>  <Stock  {...props} />}>
                     
                 </Route>
 

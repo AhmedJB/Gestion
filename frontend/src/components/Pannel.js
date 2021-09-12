@@ -172,6 +172,21 @@ function Pannel(props) {
   <Fragment>
     <AnimateNav />
 
+    <div className='row'>
+      <Card width="25%" height="200px">
+        <h3 className='card-title text-center'>Ventes</h3>
+        <h3 className='card-value text-center'>0</h3>
+      </Card>
+      <Card width="25%" height="200px">
+        <h3 className='card-title text-center'>Profit</h3>
+        <h3 className='card-value text-center'>0</h3>
+      </Card>
+      <Card width="25%" height="200px">
+        <h3 className='card-title text-center'>Achat</h3>
+        <h3 className='card-value text-center'>0</h3>
+      </Card>
+    </div>
+
     
    
 

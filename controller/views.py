@@ -70,3 +70,6 @@ class AddProvider(APIView):
             p.save()
             ps = ProviderSerializer(p).data
             return Response(ps)
+
+
+    

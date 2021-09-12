@@ -42,13 +42,20 @@ function AnimateNav(props){
 
     const navbar = {
       open : {
-        zIndex:10
+        zIndex:10,
+        width:300
       },
       closed : {
         zIndex:0,
         transition : {
-          delay:1
+          zIndex:{
+            delay:1
+          },
+          width :{
+            delay:1.2
+          }
         }
+        , width:0
       }
     }
 
@@ -66,7 +73,7 @@ function AnimateNav(props){
       closed : {
         opacity:0,
         
-        zIndex:0,
+        zIndex:-1,
         transition : {
           opacity:{
             delay:0.8
