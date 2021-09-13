@@ -21,7 +21,18 @@ nav#sidebar {
   width: 300px;
   min-height: 100vh;
   height:100%;
+  
+  
+}
 
+nav#sidebar  .background{
+  min-height: 100vh;
+  height:100%;
+}
+
+nav.overflow{
+  overflow-y:auto;
+  overflow-x: hidden;
 }
 
 nav#sidebar.open{
@@ -71,9 +82,9 @@ nav#sidebar.closed{
 }
 
 #sidebar ul {
-  padding: 25px;
+  padding: 0px 25px;
   position: absolute;
-  top: 100px;
+  /* top: 100px; */
   width: 100%;
 }
 

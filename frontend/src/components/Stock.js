@@ -20,6 +20,7 @@ function Stock(props) {
     const [User, setUser] = useContext(UserContext);
     const [Data, setData] = useContext(DataContext);
     const [open,setOpen] = useState(false);
+    const [viewOptions,setView] = useState(false);
     const names = {
         'eau': 'Radiateur Eau',
         'air': 'Radiateur Air',
@@ -125,6 +126,11 @@ function Stock(props) {
 
 
 
+      function SelectProvider(){
+        console.log('selected')
+      }
+
+
     const NotFound = (
         <div className="not-found">
             <h2 className="error-text">Resultat : 0</h2>
@@ -184,13 +190,15 @@ function Stock(props) {
     );
 
 
+
+
     const html = (
         <Fragment>
           <Modal open={open} closeFunction = {setOpen}>
             <h1 className='title-modal'>Ajout de fournisseur</h1>
             <div className="modal-input">
-              <label for="name">Fournisseur</label>
-              <input type="text" id="name"></input>
+            <CustomSelect options={Data.Suppliers} changeFunc={SelectProvider}
+label="name" multi={true} fvalue="id" placeholder="Choisir un Fournisseur" />
               <label for="email">Email</label>
               <input type="text" id="email"></input>
               <label for="phone">Tel</label>
@@ -201,7 +209,7 @@ function Stock(props) {
           </Modal>
           <AnimateNav />
           <section className="card Supplier">
-            <h1 className="card-title text-center">Fournisseur</h1>
+            <h1 className="card-title text-center">Stock</h1>
     
            {Products.length == 0 ? NotFound : DataTable }
           </section>

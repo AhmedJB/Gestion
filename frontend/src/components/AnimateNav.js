@@ -106,6 +106,7 @@ function AnimateNav(props){
     initial={false}
     animate={isOpen ? "open" : "closed"}
     /* className={isOpen ? "open" : "closed"} */
+    
     variants={layer}
     onClick={handleClick}
     
@@ -116,7 +117,7 @@ function AnimateNav(props){
       id="sidebar"
       initial={false}
       animate={isOpen ? "open" : "closed"}
-      /* className={isOpen ? "open" : "closed"} */
+      className={isOpen ? "overflow":""}
       variants={navbar}
       custom={height}
       ref={containerRef}

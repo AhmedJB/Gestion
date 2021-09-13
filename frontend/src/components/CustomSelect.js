@@ -20,6 +20,7 @@ function CustomSelect(props) {
     color = "#b187ff"
     className = "CustomDropdown"
     clearable = {true}
+    multi={props.multi ?  true: false}
     />
     )
 

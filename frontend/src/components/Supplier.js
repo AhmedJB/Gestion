@@ -1,28 +1,25 @@
 import React, { useState, useEffect, useContext, Fragment } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { DataContext } from "../contexts/DataContext";
-import { isLogged, req, download_file, logout } from "../helper";
+import { isLogged, req, download_file, logout,postReq } from "../helper";
 import { Redirect } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
 import styled from "styled-components";
 import Nav from "./Nav";
 import AnimateNav from "./AnimateNav";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationCircle, faMicrophoneAltSlash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-dropdown-select";
 import CustomSelect from "./CustomSelect";
 import Modal from "./Modal";
+import {motion} from "framer-motion";
 
 function Supplier(props) {
   const { addToast } = useToasts();
   const [loading, setLoading] = useState(true);
   const [User, setUser] = useContext(UserContext);
   const [Data, setData] = useContext(DataContext);
-  const [Suppliers, setSuppliers] = useState([{
-    name:'test'
-  },{
-    name:'test2'
-  }]);
+  const [Suppliers, setSuppliers] = useState(Data.Suppliers);
 
   const [open,setOpen] = useState(false);
 
@@ -36,6 +33,7 @@ function Supplier(props) {
         obj.username = resp.username;
         obj.email = resp.email;
         setUser(obj);
+        await updateSuppliers();
         return obj;
       } else {
         logout(setUser, User);
@@ -63,6 +61,70 @@ function Supplier(props) {
     day: "numeric",
   };
 
+  async function  updateSuppliers(){
+    let supResp = await  req('provider');
+    let obj2 = {...Data};
+    obj2.Suppliers = supResp;
+    setData(obj2);
+    setSuppliers(supResp);
+    return true;
+  }
+
+  async function createSupplier(){
+    let name = document.getElementById('name').value;
+    let email = document.getElementById('email').value;
+    let phone = document.getElementById('phone').value;
+    let address = document.getElementById('add').value;
+
+    let body = {
+      name,
+      email,
+      phone,
+      address
+    }
+    let resp = await postReq('provider',body);
+    if (resp){
+      updateSuppliers();
+      addToast("Succès", {
+        appearance: "success",
+        autoDismiss: true,
+      });
+
+    }
+  }
+
+  function  filter(v){
+    var d = [];
+    if (v != ''){
+      let temp;
+      for (let i=0 ; i<  v.length ; i++){
+          temp = Data.Suppliers.filter(e => e.id == v[i].id);
+          for (let i=0 ; i<  temp.length ; i++){
+            console.log(temp);
+            d.push(temp[i]);
+            }
+      }
+    }else{
+      d = Data.Suppliers
+    }
+    console.log(d);
+    setSuppliers(d);
+
+  }
+
+  async function del(id){
+    let  resp = await req('delprovider/'+String(id));
+    let fourn = Data.Suppliers.filter(e => e.id == id)[0];
+    if (resp){
+      addToast("Fournisseur "+fourn.name + " a ete supprime", {
+        appearance: "success",
+        autoDismiss: true,
+      });
+      updateSuppliers();
+    }
+
+  }
+
   const NotFound = (
     <div className="not-found">
         <h2 className="error-text">Resultat : 0</h2>
@@ -73,36 +135,29 @@ function Supplier(props) {
 
   const DataTable = (
       <Fragment>
-          <div className="filtre-row seperate">
-              {/* <select id="fourn-select">
-                  <option value="0">Tout</option>
-                  <option value="Test">Jhon</option>
-              </select> */}
-
-  
-
-<CustomSelect options={Suppliers} changeFunc={(val) => alert(val)}
-label="name" fvalue="name" placeholder="Choisir un Fournisseur" />
-<button class='btn-main' onClick={() => {setOpen(!open)}}>Ajouter un Fournisseur</button>
-          </div>
+          
           <table id="status-table">
     <tbody>
       <tr>
-        <th classname="date">Fournisseur</th>
+        <th className="date">Fournisseur</th>
         <th classname="task-title">Email</th>
         <th classname="status">Tel</th>
+        <th  className="address">Address</th>
         <th classname="tel">Date</th>
+        <th></th>
       </tr>
 
       {Suppliers.map(e => {
         return (
           <tr>
-        <td classname="date">{e.name}</td>
-        <td classname="task-title">casa@gmail.com</td>
-        <td classname="status">06524871234</td>
-        <td classname="date">
-          {new Date().toLocaleDateString("fr-FR", options)}
+        <td className="date">{e.name}</td>
+        <td className="task-title">{e.email}</td>
+        <td className="status">{e.phone}</td>
+        <td  className="address">{e.address}</td>
+        <td className="date">
+          {new Date(e.date).toLocaleDateString("fr-FR", options)}
         </td>
+        <td onClick={() => {del(e.id)}} className="delete" ><FontAwesomeIcon  icon={faTrashAlt}  className="trash"/></td>
       </tr>
         )
       })}
@@ -119,19 +174,34 @@ label="name" fvalue="name" placeholder="Choisir un Fournisseur" />
       <Modal open={open} closeFunction = {setOpen}>
         <h1 className='title-modal'>Ajout de fournisseur</h1>
         <div className="modal-input">
-          <label for="name">Fournisseur</label>
+          <label for="name">Nom</label>
           <input type="text" id="name"></input>
           <label for="email">Email</label>
           <input type="text" id="email"></input>
           <label for="phone">Tel</label>
           <input type="text" id="phone"></input>
+          <label for='add'>Address</label>
+          <input type="text" id="add"></input>
 
-          <button id="submit">Creer</button>
+          <button id="submit"  onClick={createSupplier}>Creer</button>
         </div>
       </Modal>
       <AnimateNav />
       <section className="card Supplier">
         <h1 className="card-title text-center">Fournisseur</h1>
+
+        <div className="filtre-row seperate">
+              {/* <select id="fourn-select">
+                  <option value="0">Tout</option>
+                  <option value="Test">Jhon</option>
+              </select> */}
+
+  
+
+<CustomSelect options={Data.Suppliers} changeFunc={filter}
+label="name" multi={true} fvalue="id" placeholder="Choisir un Fournisseur" />
+<button class='btn-main' onClick={() => {setOpen(!open)}}>Ajouter un Fournisseur</button>
+          </div>
 
        {Suppliers.length == 0 ? NotFound : DataTable }
 

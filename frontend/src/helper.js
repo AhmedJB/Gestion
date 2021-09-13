@@ -156,14 +156,14 @@ export async function set_vidiq_account(url,username = null , password = null){
 }
 
 
-export async function create_task(url,title = null , keywords = null){
+export async function postReq(url,body){
     let access = sessionStorage.getItem('accessToken');
     let headers = set_header(access);
 
-    let body = {
+    /* let body = {
         title,
         keywords
-    }
+    } */
 
     let options  = {
         method : 'post',
@@ -241,7 +241,7 @@ export async function req(url){
     }else if (preResp.status == 401){
         let dec = await refreshToken();
         if (dec){
-            req(url);
+            return req(url);
         }else{
             
             return false;

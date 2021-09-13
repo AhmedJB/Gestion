@@ -6,11 +6,8 @@ export const DataContext = createContext();
 export const DataProvider = props => {
 
     let obj = {
-        vidiq : {
-            username : '',
-            password : ''
-        },
-        tasks : []
+        Suppliers : [],
+        Products : [],
     }
     
     const [Data,setData] = useState(obj);
