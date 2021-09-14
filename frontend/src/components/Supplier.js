@@ -4,15 +4,12 @@ import { DataContext } from "../contexts/DataContext";
 import { isLogged, req, download_file, logout,postReq } from "../helper";
 import { Redirect } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
-import styled from "styled-components";
-import Nav from "./Nav";
 import AnimateNav from "./AnimateNav";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faExclamationCircle, faMicrophoneAltSlash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-dropdown-select";
 import CustomSelect from "./CustomSelect";
 import Modal from "./Modal";
-import {motion} from "framer-motion";
 
 function Supplier(props) {
   const { addToast } = useToasts();

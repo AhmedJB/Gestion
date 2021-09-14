@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import Nav from "./Nav";
 import AnimateNav from "./AnimateNav";
 import {logout} from '../helper';
+import ReactTooltip from "react-tooltip";
 
 
 function Pannel(props) {
@@ -88,52 +89,7 @@ function Pannel(props) {
     );
   }, []);
 
-  async function updateTasks() {
-    let resp = await req("tasks");
-    let obj2 = {...Data}
-    if (resp) {
-      obj2.tasks = resp;
-    }
-    setData(obj2);
-  }
-
   
-  async function updateVidiq() {
-    let username = document.getElementById("account_email").value;
-    let password = document.getElementById("account_password").value;
-    let resp = await set_vidiq_account("vidiq", username, password);
-    if (resp) {
-      addToast("Updated Vidiq Login info", {
-        appearance: "success",
-        autoDismiss: true,
-      });
-    } else {
-      addToast("Failed", {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    }
-  }
-
-  async function createTask() {
-    let title = document.getElementById("task-title").value;
-    let keywords = document.getElementById("keywords").value;
-    let resp = await create_task("tasks", title, keywords);
-    if (resp) {
-      let obj = { ...Data };
-      obj.tasks = resp;
-      setData(obj);
-      addToast("Created Task", {
-        appearance: "success",
-        autoDismiss: true,
-      });
-    } else {
-      addToast("Failed Task Creation", {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    }
-  }
 
   async function download(e) {
       let current = e.target;
@@ -161,29 +117,63 @@ function Pannel(props) {
     background: -moz-linear-gradient(bottom right, #000000, #282828);
     background: linear-gradient(to top left, #000000, #282828);
     padding:30px 20px;
-    margin:50px;
+    margin:50px 15px 0px 15px;
     border-radius:10px;
     box-shadow:0px 0px 10px rgba(0, 0, 0, 0.644), 0px 0px 25px rgba(0, 0, 0, 0.719);
     width: ${props => props.width};
+    max-width: ${props => props.maxWidth ? props.maxWidth : "90%"};
     height: ${props => props.height};
   `;
 
   const html = (
   <Fragment>
     <AnimateNav />
+    <ReactTooltip  id="test"></ReactTooltip>
 
     <div className='row'>
-      <Card width="25%" height="200px">
+      <Card width="450px" height="200px">
         <h3 className='card-title text-center'>Ventes</h3>
-        <h3 className='card-value text-center'>0</h3>
+        <div className='card-value card-row'>
+          <div className="card-column">
+            <p>Articles Vendu</p>
+            <p className="circle"
+            
+            >35</p>
+          </div>
+
+          <div className="card-column">
+            <p>Total</p>
+            <p className="box">1300DH</p>
+          </div>
+        </div>
       </Card>
-      <Card width="25%" height="200px">
-        <h3 className='card-title text-center'>Profit</h3>
-        <h3 className='card-value text-center'>0</h3>
-      </Card>
-      <Card width="25%" height="200px">
+      <Card width="450px" height="200px">
         <h3 className='card-title text-center'>Achat</h3>
-        <h3 className='card-value text-center'>0</h3>
+        <div className='card-value card-row'>
+          <div className="card-column">
+            <p>Articles Achetes</p>
+            <p className="circle">35</p>
+          </div>
+
+          <div className="card-column">
+            <p>Total</p>
+            <p className="box">1300DH</p>
+          </div>
+        </div>
+      </Card>
+      <Card width="450px" height="200px">
+        <h3 className='card-title text-center'>Stock</h3>
+        <div className='card-value card-row'>
+          <div className="card-column">
+            <p>Articles Disponible</p>
+            <p className="circle">35</p>
+          </div>
+
+          <div className="card-column">
+            <p>Total</p>
+            <p className="box">1000DH</p>
+          </div>
+        </div>
       </Card>
     </div>
 

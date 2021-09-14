@@ -1,6 +1,6 @@
 from django.db.models.base import Model
 from rest_framework.serializers import ModelSerializer
-from .models import CustomUser,Product,Provider,Options
+from .models import CustomUser,Product,Provider,Options,Invoices
 
 
 
@@ -37,4 +37,9 @@ class OptionsSerializer(ModelSerializer):
         model = Options
         fields = ['id','metal','type']
 
+
+class  InvoiceSerializer(ModelSerializer):
+    class Meta:
+        model = Invoices
+        fields = ['id','f_id','path','date']
 

@@ -22,6 +22,7 @@ import Nav from './Nav';
 import AnimateNav from './AnimateNav';
 import Supplier from './Supplier';
 import Stock from './Stock';
+import Invoice from './Invoice';
 
 
 
@@ -54,6 +55,10 @@ const App = (props) => {
                 
 
                 <Route path={ base + '/supplier'  } render={(props) =>  <Supplier  {...props} />}>
+                    
+                </Route>
+
+                <Route path={ base + '/invoice'  } render={(props) =>  <Invoice {...props} />  }>
                     
                 </Route>
                 <Route path={ base + '/supply'  } render={(props) =>  <Stock  {...props} />}>

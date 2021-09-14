@@ -2,7 +2,7 @@ from django.shortcuts import render,HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,permissions
-from .serializer import RegisterSerializer,ProviderSerializer,ProductSerializer,OptionsSerializer
+from .serializer import InvoiceSerializer, RegisterSerializer,ProviderSerializer,ProductSerializer,OptionsSerializer
 from .models import *
 from .tasks import execute_task
 from gestionStock.settings import MEDIA_ROOT
@@ -46,7 +46,7 @@ class Download(APIView):
 
     def get(self,request,id,format=None):
         user = request.user
-        task = user.tasks_set.filter(id=id)
+        task = Invoices.objects.filter(f_id=id)
         if len(task) != 0:
             task = task[0]
             path = MEDIA_ROOT + '/' + task.path
@@ -57,6 +57,14 @@ class Download(APIView):
             return response
         else:
             return Response({"result" : 'failed'},status.HTTP_400_BAD_REQUEST)
+
+class Invoice(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def  get(self,request,format=None):
+        invoices =  Invoices.objects.all().order_by('-date')
+        ins = InvoiceSerializer(invoices,many=True).data
+        return Response(ins,status.HTTP_200_OK)
 
 
 class AddProvider(APIView):
@@ -183,4 +191,4 @@ class ModifyProduct(APIView):
         return Response(resp,status.HTTP_200_OK)
 
         
-    
+

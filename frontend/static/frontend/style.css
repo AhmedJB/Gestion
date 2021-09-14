@@ -56,6 +56,7 @@ body{
     font-family: 'Montserrat', sans-serif;
     min-height: 100vh;
     position: relative;
+
 }
 
 #root{
@@ -64,6 +65,7 @@ body{
     position: relative;
     overflow-y:auto;
     overflow-x: hidden;
+    padding-top:30px;
 }
 
 #lr{
@@ -183,6 +185,11 @@ main#login-register{
     margin: 15px auto;
     margin-bottom: 0px;
 }
+.factsubmit{
+    margin:5px !important;
+}
+
+
 
 #submit,#keysubmit,.download,#submitaccount{
     padding:10px;
@@ -413,11 +420,45 @@ main{
     font-size: 2em;
 }
 
-.card-value{
-    color:var(--text);
-    font-size:3em;
-    margin:30px;
+.card-row{
+    display:flex;
+    justify-content: space-around;
+    align-items: center;
+    padding:10px;
 }
+
+.card-column{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.card-column p:first-child{
+    font-size:1.3em;
+    color: var(--text);
+
+}
+
+.card-column p:nth-child(2){
+    font-size:1.3em;
+    margin: 15px;
+}
+
+.card-column .circle{
+    border: 1px  solid var(--purple);
+    padding:20px;
+    border-radius: 50%;
+    color:var(--purple);
+}
+
+.card-column .box{
+    border: 1px  solid var(--purple);
+    padding:20px;
+    border-radius: 10px;
+    color:var(--purple);
+}
+
 
 .text-center{
     text-align: center;
@@ -553,6 +594,7 @@ main{
     padding:20px;
     align-items: center;
     width:100%;
+    justify-content: center;
 }
 
 .filtre-group{
@@ -706,16 +748,30 @@ main{
 
 @media only screen 
 and (max-width : 1100px ){
+    .error-text{
+        font-size:3em;
+    }
     .modal-input-row{
         flex-direction: column;
     }
     .filtre-row{
         justify-content: center;
     }
+    #row{
+        padding-top: 0px;
+    }
 }
 
 @media only screen 
 and (max-width : 400px ){
+    .card-column p:first-child{
+        font-size:1em;
+        color: var(--text);
+    
+    }
+    .error-text{
+        font-size:2em;
+    }
     .CustomDropdown{
         margin:20px 0px;
         width:250px !important;
@@ -725,6 +781,9 @@ and (max-width : 400px ){
         width:95%;
         margin:75px auto 30px auto;
     }
+    #row{
+        padding-top: 0px;
+    }
 }
 
 
@@ -732,6 +791,15 @@ and (max-width : 400px ){
 @media only screen 
 and (max-width : 320px ) and (max-height:700px) {
 /* Styles */
+
+.card-column p:first-child{
+    font-size:1em;
+    color: var(--text);
+
+}
+.error-text{
+    font-size:2em;
+}
 body{
     font-size:8px;
 }
@@ -743,6 +811,9 @@ body{
 }
 #sidebar .background{
     height:200vh;
+}
+#row{
+    padding-top: 0px;
 }
 }
 
@@ -759,6 +830,9 @@ body{
 
 #sidebar ul{
     top:50px;
+}
+#row{
+    padding-top: 0px;
 }
 }
 

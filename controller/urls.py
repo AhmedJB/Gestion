@@ -16,6 +16,7 @@ urlpatterns = [
     path('provider',AddProvider.as_view()),
     path('modprovider/<int:id>',ModifyProvider.as_view()),
     path('product',AddProduct.as_view()),
+    path('invoices',Invoice.as_view()),
     path('modproduct/<str:id>',ModifyProduct.as_view()),
-    path('download/<int:id>',Download.as_view())
+    path('download/<str:id>',Download.as_view())
 ]

@@ -157,7 +157,7 @@ function Stock(props) {
       function formatPrice(e){
         let t = e.target;
   
-        t.value = t.value.split(' ')[0] +' DH'
+        t.value = t.value.split(' ')[0].replace(',','.') +' DH'
       }
   
       function handleProvider(ps){
@@ -614,7 +614,7 @@ label="name" multi={false} fvalue="id" placeholder="Choisir un Fournisseur" />
           <AnimateNav />
           <section className="card Supplier">
             <h1 className="card-title text-center">Stock</h1>
-            <div className="filtre-row seperate">
+            <div className="filtre-row">
                 <div className='filtre-group'>
                 <CustomSelect options={Data.Suppliers} changeFunc={filterFournisseur}
   label="name" fvalue="id" placeholder="Choisir un Fournisseur" />
