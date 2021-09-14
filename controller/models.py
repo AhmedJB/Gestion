@@ -26,6 +26,7 @@ class Provider(models.Model):
 
 class Product(models.Model):
     provider = models.ForeignKey(Provider , on_delete=models.CASCADE)
+    p_id = models.CharField(max_length=255,default='')
     name = models.CharField(max_length=255,default='')
     ptype = models.CharField(max_length=255,default='')
     price_vente = models.FloatField(default=0)
@@ -38,8 +39,7 @@ class Product(models.Model):
 class Options(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     metal = models.CharField(max_length=255,default='')
-    ref = models.CharField(max_length=255,default='')
-    tube_type = models.CharField(max_length=255,default='')
+    type = models.CharField(max_length=255,default='')
 
     def __str__(self):
         return self.metal

@@ -1,8 +1,10 @@
 from django.contrib import admin
-from .models import CustomUser,Provider
+from .models import CustomUser,Provider,Product,Options
 
 # Register your models here.
 
 
 admin.site.register(CustomUser)
 admin.site.register(Provider)
+admin.site.register(Product)
+admin.site.register(Options)

@@ -7,6 +7,7 @@ from .models import *
 from .tasks import execute_task
 from gestionStock.settings import MEDIA_ROOT
 from django.core.files import File
+from .helper import format_number
 
 # Create your views here.
 
@@ -78,7 +79,7 @@ class AddProvider(APIView):
 
 
 
-class DelProvider(APIView):
+class ModifyProvider(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self,request,id,format="None"):
@@ -92,16 +93,30 @@ class DelProvider(APIView):
         
         return Response(data, status.HTTP_200_OK)
 
+    def post(self,request,id,format="None"):
+        data = request.data
+        supplier = Provider.objects.filter(id=id)[0]
+        supplier.name = data['name']
+        supplier.email = data['email']
+        supplier.phone = data['phone']
+        supplier.address = data['address']
+        supplier.save()
+        s = ProviderSerializer(supplier).data
+        return Response(s,status.HTTP_200_OK)
+
+
+
 
 class AddProduct(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self,request,format=None):
         data = request.data 
-        supplier = Provider.objects.filter(id=data['supplier_id'])[0]
-        product = supplier.product_set.create(name=data['product_name'],ptype=data['product_type'],price_vente=data['price_vente'],price_achat=data['price_achat'],quantity=data['quantity'])
+        supplier = Provider.objects.filter(id=data['fournisseur'])[0]
+        product = supplier.product_set.create(name=data['product']['name'],ptype=data['product']['ptype'],price_vente=data['product']['price_vente'],price_achat=data['product']['price_achat'],quantity=data['product']['quantity'])
+        product.p_id = format_number(product.id)
         product.save()
-        options = product.options_set.create(metal=data['metal'],ref=data['ref'],tube_type=['tube_type'])
+        options = product.options_set.create(metal=data['options']['metal'],type=data['options']['type'])
         options.save()
         resp = {
             'fournisseur':ProviderSerializer(supplier).data,
@@ -125,4 +140,47 @@ class AddProduct(APIView):
             resps.append(resp)
         return Response(resps,status.HTTP_200_OK)
 
+
+class ModifyProduct(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request,id,format="None"):
+        p = Product.objects.filter(p_id = id)
+        if len(p) != 0:
+            p = p[0]
+            data = ProductSerializer(p).data
+            p.delete()
+        else:
+            data= {}
+
+
+        return Response(data, status.HTTP_200_OK)
+
+    def post(self,request,id,format="None"):
+        data = request.data
+        
+        p = Product.objects.filter(p_id = id)[0]
+        print(data)
+        supplier = Provider.objects.filter(id=data['fournisseur']['id'])[0]
+        p.provider = supplier
+        p.name=data['product']['name']
+        p.ptype=data['product']['ptype']
+        p.price_vente=data['product']['price_vente']
+        p.price_achat=data['product']['price_achat']
+        p.quantity=data['product']['quantity']
+        opt = p.options_set.all()[0]
+        opt.metal = data['options']['metal']
+        opt.type = data['options']['type']
+        p.save()
+        opt.save()
+
+        resp = {
+            'fournisseur':ProviderSerializer(supplier).data,
+            'product':ProductSerializer(p).data,
+            'options' : OptionsSerializer(opt).data
+        }
+
+        return Response(resp,status.HTTP_200_OK)
+
+        
     

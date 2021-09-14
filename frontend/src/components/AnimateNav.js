@@ -124,7 +124,7 @@ function AnimateNav(props){
       
     >
         
-      <motion.div className="background" variants={sidebar}  />
+      <motion.div className={isOpen ? "background" : "background fixed"} variants={sidebar}  />
       <Navigation />
       <MenuToggle toggle={() => toggleOpen()} />
 

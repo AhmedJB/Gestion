@@ -18,8 +18,9 @@ function CustomSelect(props) {
     searchable= {true}
     placeholder={props.placeholder}
     color = "#b187ff"
-    className = "CustomDropdown"
+    className ={props.clas ? props.clas + " CustomDropdown" : "CustomDropdown"} 
     clearable = {true}
+    values = {props.values ? props.values : []}
     multi={props.multi ?  true: false}
     />
     )
@@ -29,6 +30,6 @@ function CustomSelect(props) {
 
 
 }
-
+        
 
 export default CustomSelect;

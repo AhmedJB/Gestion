@@ -30,11 +30,11 @@ class ProviderSerializer(ModelSerializer):
 class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id','name','ptype','price_vente','price_achat','quantity']
+        fields = ['id','p_id','name','ptype','price_vente','price_achat','quantity']
 
 class OptionsSerializer(ModelSerializer):
     class Meta:
         model = Options
-        fields = ['id','metal','ref','tube_type']
+        fields = ['id','metal','type']
 
 

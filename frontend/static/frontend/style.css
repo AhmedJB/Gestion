@@ -61,7 +61,6 @@ body{
 #root{
     height:100%;
     min-height: 100vh;
-    padding: 30px 0px;
     position: relative;
     overflow-y:auto;
     overflow-x: hidden;
@@ -400,7 +399,7 @@ main{
     background: -moz-linear-gradient(bottom right, #000000, #282828);
     background: linear-gradient(to top left, #000000, #282828);
     padding:30px 20px;
-    margin:50px;
+    margin: 75px 50px 30px 50px;
     border-radius:10px;
     box-shadow:0px 0px 10px rgba(0, 0, 0, 0.644), 0px 0px 25px rgba(0, 0, 0, 0.719);
 }
@@ -559,6 +558,8 @@ main{
 .filtre-group{
     display:flex;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 
 }
 
@@ -601,7 +602,8 @@ main{
 }
 
 .CustomDropdown{
-    width:300px !important;
+    width:280px !important;
+    max-width: 100%;
     background-color:transparent;
     color:var(--text) !important;
     padding:10px !important;
@@ -634,37 +636,7 @@ main{
     
 }
 
-.modal-input{
-    display:flex;
-    flex-direction: column;
-    align-items: center;
 
-}
-
-.modal-input label{
-    font-size:.8em;
-    color:var(--text);
-    letter-spacing:2px;
-    font-weight:700;
-    margin:20px;
-}
-
-.modal-input input{
-    padding:5px;
-    outline:none;
-    width:280px;
-    background:transparent;
-    border-radius: 8px;
-    font-size:1em;
-    border:1px solid var(--text);
-    filter:brightness(.6);
-    color:var(--text);
-    transition: filter .2s linear;
-}
-
-.modal-input input:hover{
-    filter: brightness(1);
-}
 
 
 .not-found{
@@ -691,6 +663,11 @@ main{
 .error-circle{
     font-size:10em;
 
+}
+
+
+.fixed{
+    height:100vh !important;
 }
 
 
@@ -721,6 +698,34 @@ main{
     transform: scale(1.2);
 }
 
+.CustomSelectMargin{
+    margin:0px;
+    margin-bottom:15px;
+}
+
+
+@media only screen 
+and (max-width : 1100px ){
+    .modal-input-row{
+        flex-direction: column;
+    }
+    .filtre-row{
+        justify-content: center;
+    }
+}
+
+@media only screen 
+and (max-width : 400px ){
+    .CustomDropdown{
+        margin:20px 0px;
+        width:250px !important;
+    }
+
+    .card{
+        width:95%;
+        margin:75px auto 30px auto;
+    }
+}
 
 
 /* Smartphones (portrait) ----------- */
@@ -731,6 +736,11 @@ body{
     font-size:8px;
 }
 
+
+
+.modal-input-row{
+    flex-direction: column;
+}
 #sidebar .background{
     height:200vh;
 }

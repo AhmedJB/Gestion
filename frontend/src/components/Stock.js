@@ -3,12 +3,12 @@ import { UserContext } from "../contexts/UserContext";
 import { DataContext } from "../contexts/DataContext";
 import { Redirect } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
-import { isLogged, req, download_file, logout } from "../helper";
+import { isLogged, req, download_file, logout, postReq } from "../helper";
 import styled from 'styled-components';
 import Nav from "./Nav";
 import AnimateNav from "./AnimateNav";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faExclamationCircle, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import CustomSelect from "./CustomSelect";
 import Modal from "./Modal";
 
@@ -21,57 +21,44 @@ function Stock(props) {
     const [Data, setData] = useContext(DataContext);
     const [open,setOpen] = useState(false);
     const [viewOptions,setView] = useState(false);
+    const [ModifyOpen,setModify] = useState(false);
+    const [viewModify, setViewModify] = useState(false);
+    const [modifyData,setModifyData] = useState({
+      fournisseur : '',
+      product : {
+        name : '',
+        ptype : '',
+        price_vente : '',
+        price_achat : '',
+        quantity : '',
+
+      },
+      options : {
+        metal : '',
+        type : ''
+      }
+    })
     const names = {
         'eau': 'Radiateur Eau',
         'air': 'Radiateur Air',
         'clime': 'Radiateur Clime',
         'chauf': 'Radiateur Chauffage'
     }
-    const [Filter, setFilter] = useState({
-        fournisseur: '',
+    const [Products, setProduct] = useState([]);
 
-    })
-    const [Products, setProduct] = useState([
-        {
-            id:0,
-            fournisseur: 'testf',
-            prodname : 'test',
-            ptype : 'eau',
-            Sell : '20',
-            Achat : '15',
-            options : {
-                metal : '',
-                ref : '',
-                type : ''
-            }
-        },
-        {
-            id:1,
-            fournisseur: 'testf2',
-            prodname : 'test2',
-            ptype : 'air',
-            Sell : '20',
-            Achat : '15',
-            options : {
-                metal : 'test',
-                ref : '',
-                type : ''
-            }
-        },
-        {
-            id:2,
-            fournisseur: 'testf2',
-            prodname : 'test2',
-            ptype : 'clime',
-            Sell : '20',
-            Achat : '15',
-            options : {
-                metal : '',
-                ref : '',
-                type : ''
-            }
-        }
-    ]);
+
+    
+
+    const [Metal,setMetal] = useState([
+      {
+        name:'Cuivre',
+        value: 'cuivre'
+      },
+      {
+        name:'Alimunium',
+        value: 'alimunium'
+      }
+    ])
 
     const [Options, setOptions] = useState([
         {
@@ -93,6 +80,22 @@ function Stock(props) {
         
     ]);
 
+    const [Body,setBody] = useState({
+      fournisseur : '',
+      product : {
+        name : '',
+        ptype : '',
+        price_vente : '',
+        price_achat : '',
+        quantity : '',
+
+      },
+      options : {
+        metal : '',
+        type : ''
+      }
+    })
+
 
     useEffect(() => {
         async function test() {
@@ -104,6 +107,8 @@ function Stock(props) {
             obj.username = resp.username;
             obj.email = resp.email;
             setUser(obj);
+            await updateData();
+            
             return obj;
           } else {
             logout(setUser, User);
@@ -126,9 +131,315 @@ function Stock(props) {
 
 
 
-      function SelectProvider(){
-        console.log('selected')
+
+
+      async function updateProducts(){
+        let pResp = await req('product');
+        let obj = {...Data};
+        obj.Products = pResp;
+        setProduct(pResp);
+        setData(obj);
+        return true;
       }
+  
+      async function  updateData(){
+        let supResp = await  req('provider');
+        let Prods = await req('product');
+        let obj2 = {...Data};
+        obj2.Suppliers = supResp;
+        obj2.Products = Prods;
+        setData(obj2);
+        setProduct(Prods);
+        return true;
+      }
+
+
+      function formatPrice(e){
+        let t = e.target;
+  
+        t.value = t.value.split(' ')[0] +' DH'
+      }
+  
+      function handleProvider(ps){
+        let body = {...Body};
+        if (ps == ''){
+          body.fournisseur = '';
+        }else{
+          let p = ps[0];
+          body.fournisseur = p.id;
+        }
+  
+        setBody(body);
+        
+        
+  
+      }
+  
+      function handleOption(vs){
+        let body = {...Body};
+        let v = vs[0];
+        if (v.value == 'eau'){
+          setView(true);
+          body.product.ptype = v.value;
+        }else{
+          setView(false);
+          body.product.ptype = v.value;
+          body.options.metal = '';
+          body.options.type = '';
+        }
+        setBody(body);
+  
+      }
+  
+      function handleMetal(ms){
+        let body = {...Body};
+        if (ms == ''){
+          body.options.metal = '';
+        }else{
+          let m = ms[0];
+          body.options.metal = m.value;
+        }
+        setBody(body);
+      }
+
+      function handleProviderv2(ps){
+        let body = {...modifyData};
+        if (ps == ''){
+          body.fournisseur = '';
+        }else{
+          let p = ps[0];
+          body.fournisseur = p;
+        }
+  
+        setModifyData(body);
+        
+        
+  
+      }
+
+      function handleOptionv2(vs){
+        
+        let body = {...modifyData};
+        let v = vs[0];
+        if (v.value == 'eau'){
+          
+          setViewModify(true);
+          
+          body.product.ptype = v.value;
+        }else{
+          setViewModify(false);
+          body.product.ptype = v.value;
+          body.options.metal = '';
+          body.options.type = '';
+        }
+        console.log(body)
+        setModifyData(body);
+  
+      }
+  
+      function handleMetalv2(ms){
+        let body = {...modifyData};
+        if (ms == ''){
+          body.options.metal = '';
+        }else{
+          let m = ms[0];
+          body.options.metal = m.value;
+        }
+        setModifyData(body);
+      }
+  
+      function handleOpen(){
+        setView(false);
+        setBody({
+          fournisseur : '',
+          product : {
+            name : '',
+            ptype : '',
+            price_vente : '',
+            price_achat : '',
+            quantity : '',
+    
+          },
+          options : {
+            metal : '',
+            type : ''
+          }
+        });
+        setOpen(!open);
+  
+      }
+  
+  
+      async function CreateProduct(){
+        let body = {...Body};
+        body.product.name = document.getElementById('name').value;
+        
+  
+        if (body.product.ptype == 'eau'){
+          body.options.type = document.getElementById('type').value;
+        }
+  
+        body.product.price_achat = document.getElementById('achat').value.split(' ')[0];
+        body.product.price_vente = document.getElementById('vente').value.split(' ')[0];
+        body.product.quantity = document.getElementById('qt').value;
+  
+        setBody(body);
+  
+        let resp = await postReq('product',Body);
+        if (resp){
+          addToast("Succès", {
+            appearance: "success",
+            autoDismiss: true,
+          });
+          console.log(resp);
+          updateProducts();
+          //updateSuppliers();
+        }else{
+          addToast("Erreur", {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        }
+  
+  
+  
+      }
+
+
+
+     
+
+      function getSupp(id){
+        if(id){
+          let supp = Data.Suppliers.filter(e => e.id == id)[0];
+          return supp.name;
+        }
+        
+      }
+
+      function getarray(key1){
+        let arr = [];
+        for (let i = 0; i < Products.length; i++){
+          arr.push(Products[i][key1]);
+        }
+        return arr;
+
+      }
+
+      function filterCat(cs){
+        if (cs == ''){
+          updateProducts();
+        }else{
+          let arr = [];
+          let v = cs[0];
+          
+          for (let i = 0; i < Products.length; i++){
+            if (Products[i].product.ptype == v.value){
+              arr.push(Products[i]);
+            }
+            
+          }
+          setProduct(arr);
+        }
+      }
+
+      function filterProduct(vs){
+        if (vs == ''){
+          updateProducts();
+        }else{
+          let arr = [];
+          let v = vs[0];
+          for (let i = 0; i < Products.length; i++){
+            if (Products[i].product.p_id == v.p_id){
+              arr.push(Products[i]);
+            }
+            
+          }
+          setProduct(arr);
+        }
+      }
+
+      function filterFournisseur(fs){
+        if (fs == ''){
+          updateProducts();
+        }else{
+          let arr = [];
+          let f = fs[0];
+          for (let i = 0; i < Products.length; i++){
+            
+            if (Products[i].fournisseur.id == f.id){
+              arr.push(Products[i]);
+            }
+            
+          }
+          setProduct(arr);
+        }
+      }
+
+
+      async function modify(id){
+        setModify(!ModifyOpen);
+        let mod = Products.filter(e => e.product.p_id == id)[0]
+        console.log(mod);
+        if (mod.product.ptype == "eau"){
+          setViewModify(true);
+        }else{
+          setViewModify(false);
+        }
+        setModifyData(mod);
+        //let resp = await modifySupplier(id);
+        
+    
+      }
+
+      async function del(id){
+        let  resp = await req('modproduct/'+String(id));
+        let p = Products.filter(e => e.product.p_id == id)[0];
+        if (resp){
+          addToast("Produit "+p.product.name + " a ete supprime", {
+            appearance: "success",
+            autoDismiss: true,
+          });
+          updateData();
+        }
+    
+      }
+    
+      async function ModifyProduct(id){
+        let body = {...modifyData};
+        body.product.name = document.getElementById('name').value;
+        
+  
+        if (body.product.ptype == 'eau'){
+          body.options.type = document.getElementById('type').value;
+        }
+  
+        body.product.price_achat = document.getElementById('achat').value.split(' ')[0];
+        body.product.price_vente = document.getElementById('vente').value.split(' ')[0];
+        body.product.quantity = document.getElementById('qt').value;
+  
+        setModifyData(body);
+  
+        let resp = await postReq('modproduct/'+body.product.p_id,modifyData);
+        if (resp){
+          addToast("Succès", {
+            appearance: "success",
+            autoDismiss: true,
+          });
+          console.log(resp);
+          updateData();
+          //updateSuppliers();
+        }else{
+          addToast("Erreur", {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        }
+  
+  
+  
+      }
+
 
 
     const NotFound = (
@@ -140,44 +451,40 @@ function Stock(props) {
 
     const DataTable = (
         <Fragment>
-            <div className="filtre-row seperate">
-                <div className='filtre-group'>
-                <CustomSelect options={Products} changeFunc={(val) => alert(val)}
-  label="fournisseur" fvalue="fournisseur" placeholder="Choisir un Fournisseur" />
-                    <CustomSelect options={Options} changeFunc={(val) => alert(val)}
-  label="name" fvalue="value" placeholder="Choisir un Produit" />
-
-
-                </div>
-  
-  <button class='btn-main' onClick={() => {setOpen(!open)}}>Ajouter un Produit</button>
-            </div>
+            
             <table id="status-table">
       <tbody>
         <tr>
-          <th classname="date">Fournisseur</th>
+          <th classname="date">ID</th>
           <th classname="task-title">Nom du Produit</th>
-          <th classname="status">Type</th>
-          <th classname="tel">Prix Vente</th>
+          <th classname="status">Categorie</th>
+          <th>Metal</th>
+          <th classname="tel">Type</th>
+          <th>Quantite</th>
           <th classname="tel">Prix Achat</th>
-          <th classname="tel">Metal</th>
-          <th classname="tel">Reference</th>
-          <th classname="tel">type de tube</th>
+          <th classname="tel">Prix Vente</th>
+          <th classname="tel">Fournisseur</th>
+          <th></th>
+          <th></th>
         </tr>
   
         {Products.map(e => {
+          console.log(e);
           return (
-            <tr key={e.id}>
-          <td classname="date">{e.fournisseur}</td>
-          <td classname="task-title">{e.prodname}</td>
-          <td classname="status">{e.ptype}</td>
-          <td classname="date">
-            {e.Sell}
-          </td>
-          <td classname="status">{e.Achat}</td>
+            <tr>
+              <td>{e.product.p_id}</td>
+          <td classname="date">{e.product.name}</td>
+          <td classname="task-title">{names[e.product.ptype]}</td>
           <td classname="status">{e.options.metal}</td>
-          <td classname="status">{e.options.ref}</td>
-          <td classname="status">{e.options.type}</td>
+          <td classname="date">
+            {e.options.type}
+          </td>
+          <td classname="status">{e.product.quantity}</td>
+          <td classname="status">{e.product.price_achat + ' DH'}</td>
+          <td classname="status">{e.product.price_vente + ' DH'}</td>
+          <td classname="status">{getSupp(e.fournisseur.id)}</td>
+          <td className="edit" onClick={() => (modify(e.product.p_id))}><FontAwesomeIcon  icon={faEdit}  className="trash"/></td>
+        <td onClick={() => {del(e.product.p_id)}} className="delete" ><FontAwesomeIcon  icon={faTrashAlt}  className="trash"/></td>
         </tr>
           )
         })}
@@ -190,26 +497,137 @@ function Stock(props) {
     );
 
 
+    
+
+
 
 
     const html = (
         <Fragment>
-          <Modal open={open} closeFunction = {setOpen}>
-            <h1 className='title-modal'>Ajout de fournisseur</h1>
+
+    <Modal open={ModifyOpen} closeFunction = {setModify}>
+            <h1 className='title-modal m20'>Modification de Produit</h1>
             <div className="modal-input">
-            <CustomSelect options={Data.Suppliers} changeFunc={SelectProvider}
-label="name" multi={true} fvalue="id" placeholder="Choisir un Fournisseur" />
-              <label for="email">Email</label>
-              <input type="text" id="email"></input>
-              <label for="phone">Tel</label>
-              <input type="text" id="phone"></input>
+              <div className="modal-input-row">
+              <CustomSelect  options={Data.Suppliers} changeFunc={handleProviderv2}
+label="name" multi={false} values={[modifyData.fournisseur]} fvalue="id" placeholder="Choisir un Fournisseur" />
+<CustomSelect options={Options}  changeFunc={handleOptionv2}
+  label="name" fvalue="value" values={[Options.find(opt => opt.value  == modifyData.product.ptype)]} placeholder="Choisir un Produit" />
+              </div>
+              
+                
+                <div className="input-wrapper">
+                <label for="name">Nom du produit</label>
+                <input type="text" id="name" defaultValue={modifyData.product.name}></input>
+                </div>
+                {viewModify && <div className="input-wrapper">
+                <label for="type">Type</label>
+              <CustomSelect options={Metal} changeFunc={handleMetalv2}
+  label="name" fvalue="value" values={modifyData.options.metal == '' ? [] : [Metal.find(opt => opt.value == modifyData.options.metal)]} clas="CustomSelectMargin" placeholder="Choisir un Metal" />
+              
+              
+              <input type="text" defaultValue={modifyData.options.type}  id="type"></input>
+              </div> }
+              
+                
+                <div className="modal-input-row">
+                <div className="modal-input-row">
+              <div className="input-wrapper">
+              <label for="qt">Quantite</label>
+              <input type="number" defaultValue={modifyData.product.quantity} id="qt"></input>
+              </div>
+                </div>
+                
+              <div className="modal-input-row">
+              <div className="input-wrapper">
+              <label for="achat">Prix Achat</label>
+              <input type="text" placeholder="0 DH" defaultValue={modifyData.product.price_achat} onBlur={formatPrice} id="achat"></input>
+              </div>
+              <div className="input-wrapper">
+              <label for="vente">Prix Vente</label>
+              <input type="text" placeholder="0 DH" defaultValue={modifyData.product.price_vente} onBlur={formatPrice} id="vente"></input>
+              </div>
+              </div>
+      
+              
+              
+              </div>
+              
     
-              <button id="submit">Creer</button>
+              <button id="submit" onClick={ModifyProduct} className="modalSubmit">Modifier</button>
+            </div>
+          </Modal>
+
+
+          <Modal open={open} closeFunction = {setOpen}>
+            <h1 className='title-modal m20'>Ajout de Produit</h1>
+            <div className="modal-input">
+              <div className="modal-input-row">
+              <CustomSelect  options={Data.Suppliers} changeFunc={handleProvider}
+label="name" multi={false} fvalue="id" placeholder="Choisir un Fournisseur" />
+<CustomSelect options={Options}  changeFunc={handleOption}
+  label="name" fvalue="value" placeholder="Choisir un Produit" />
+              </div>
+              
+                
+                <div className="input-wrapper">
+                <label for="name">Nom du produit</label>
+                <input type="text" id="name"></input>
+                </div>
+                {viewOptions && <div className="input-wrapper">
+                <label for="type">Type</label>
+              <CustomSelect options={Metal} changeFunc={handleMetal}
+  label="name" fvalue="value" clas="CustomSelectMargin" placeholder="Choisir un Metal" />
+              
+              
+              <input type="text"  id="type"></input>
+              </div> }
+              
+                
+                <div className="modal-input-row">
+                <div className="modal-input-row">
+              <div className="input-wrapper">
+              <label for="qt">Quantite</label>
+              <input type="number" id="qt"></input>
+              </div>
+                </div>
+                
+              <div className="modal-input-row">
+              <div className="input-wrapper">
+              <label for="achat">Prix Achat</label>
+              <input type="text" placeholder="0 DH" onBlur={formatPrice} id="achat"></input>
+              </div>
+              <div className="input-wrapper">
+              <label for="vente">Prix Vente</label>
+              <input type="text" placeholder="0 DH" onBlur={formatPrice} id="vente"></input>
+              </div>
+              </div>
+      
+              
+              
+              </div>
+              
+    
+              <button id="submit" onClick={CreateProduct} className="modalSubmit">Creer</button>
             </div>
           </Modal>
           <AnimateNav />
           <section className="card Supplier">
             <h1 className="card-title text-center">Stock</h1>
+            <div className="filtre-row seperate">
+                <div className='filtre-group'>
+                <CustomSelect options={Data.Suppliers} changeFunc={filterFournisseur}
+  label="name" fvalue="id" placeholder="Choisir un Fournisseur" />
+                    <CustomSelect options={Options} changeFunc={filterCat}
+  label="name" fvalue="value" placeholder="Choisir une Categorie" />
+  <CustomSelect options={getarray('product')} changeFunc={filterProduct}
+  label="p_id" fvalue="p_id" placeholder="Choisir un ID" />
+
+
+                </div>
+  
+  <button class='btn-main' onClick={() => {handleOpen()}}>Ajouter un Produit</button>
+            </div>
     
            {Products.length == 0 ? NotFound : DataTable }
           </section>
