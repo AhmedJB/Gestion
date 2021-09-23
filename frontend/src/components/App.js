@@ -78,8 +78,8 @@ const App = (props) => {
                     
                 </Route>
 
-                <Route path= {base + '/pannel'} render={(props) =>  <Pannel {...props} />}>
-                </Route>
+                {/* <Route path= {base + '/pannel'} render={(props) =>  <Pannel {...props} />}>
+                </Route> */}
             </Switch>
 
         </Router>

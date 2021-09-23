@@ -24,8 +24,8 @@ const variants = {
 
 const colors = ["#FF008C","#e65eef", "#D309E1", "#9C1AFF", "#7700FF","#6029f5","#4400FF"];
 const icons = [<FontAwesomeIcon icon={faTachometerAlt} />,<FontAwesomeIcon icon={faPeopleCarry} />,<FontAwesomeIcon icon={faUsers} /> ,<FontAwesomeIcon icon={faBoxes} />,<FontAwesomeIcon icon={faFileInvoice} />,<FontAwesomeIcon icon={faHistory}></FontAwesomeIcon> ,<FontAwesomeIcon icon={faSignOutAlt} />]
-const text = ["Dashboard","Fournisseur","Clients","Stock","Facture","History","Log Out"]
-const links = ['/app/pannel','/app/supplier','/app/client','/app/supply','/app/invoice','/app/historyv']
+const text = ["Dashboard","Fournisseurs","Clients","Stock","Echeance","Historique","Deconnexion"]
+const links = ['/app/pannel','/app/supplier','/app/client','/app/supply','/app/echeance','/app/historyv']
 
 
 export const MenuItem = ({ i }) => {
