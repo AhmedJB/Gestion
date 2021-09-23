@@ -46,7 +46,7 @@ function AnimateNav(props){
         width:300
       },
       closed : {
-        zIndex:0,
+        zIndex:1,
         transition : {
           zIndex:{
             delay:1
@@ -125,7 +125,8 @@ function AnimateNav(props){
     >
         
       <motion.div className={isOpen ? "background" : "background fixed"} variants={sidebar}  />
-      <Navigation />
+      {isOpen ?  <Navigation /> : ""}
+     
       <MenuToggle toggle={() => toggleOpen()} />
 
     </motion.nav>

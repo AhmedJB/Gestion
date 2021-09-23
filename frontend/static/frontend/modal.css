@@ -21,6 +21,34 @@
     z-index: 99;
   }
 
+  .input-field {
+    padding:5px;
+    outline:none;
+    width:280px;
+    background:transparent;
+    border-radius: 8px;
+    font-size:1em;
+    border:1px solid var(--text);
+    filter:brightness(1);
+    color:var(--text) !important;
+    transition: filter .2s linear;
+}
+
+.editable-field{
+  padding:5px;
+  border-radius:5px;
+  background-color: transparent;
+  font-size:1em;
+  font-weight: 600;
+  outline: none;
+  border:1px solid var(--text);
+  color:var(--purple)
+
+}
+
+.modal-content{
+  background-color: transparent !important;
+}
 
   .title-modal{
         color:var(--purple);

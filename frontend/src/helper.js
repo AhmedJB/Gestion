@@ -255,6 +255,37 @@ export async function req(url){
 }
 
 
+export async function req_body(url,body){
+    let access = sessionStorage.getItem('accessToken');
+    let headers = set_header(access);
+
+    let options  = {
+        method : 'get',
+        headers : headers,
+        body
+    }
+
+    let preResp = await fetch(api + url,options);
+    if (preResp.ok){
+        let resp = await preResp.json();
+        return resp;
+    }else if (preResp.status == 401){
+        let dec = await refreshToken();
+        if (dec){
+            return req(url);
+        }else{
+            
+            return false;
+        }
+    }else {
+        console.log('other errors');
+        return false;
+    }
+
+
+}
+
+
 
 export async function isLogged(){
     let resp = await req('session');

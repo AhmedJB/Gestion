@@ -71,6 +71,9 @@ class Invoices(models.Model):
 class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     total = models.FloatField(default=0)
+    paid = models.FloatField(default=0)
+    mode = models.IntegerField(default=0)
+    o_id = models.CharField(max_length=255,default="")
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

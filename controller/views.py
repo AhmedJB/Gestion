@@ -7,7 +7,7 @@ from .models import *
 from .tasks import execute_task
 from gestionStock.settings import MEDIA_ROOT
 from django.core.files import File
-from .helper import format_number
+from .helper import format_fact, format_number
 import random
 
 # Create your views here.
@@ -181,7 +181,13 @@ class AddProduct(APIView):
         data = request.data 
         supplier = Provider.objects.filter(id=data['fournisseur'])[0]
         product = supplier.product_set.create(name=data['product']['name'],ptype=data['product']['ptype'],place = int(data['product']['place']),price_vente=data['product']['price_vente'],price_achat=data['product']['price_achat'],quantity=data['product']['quantity'])
-        product.p_id = format_number(random.randrange(0,9999999999999))
+        while True:
+            idd = format_number(random.randrange(0,9999999999999))
+            orders = Product.objects.filter(p_id=idd)
+            if len(orders) == 0:
+                break
+        
+        product.p_id = idd
         product.save()
         options = product.options_set.create(metal=data['options']['metal'],type=data['options']['type'])
         options.save()
@@ -269,8 +275,11 @@ class OrderProduct(APIView):
 
 
 class OrderV(APIView):
-    def get(self):
-        pass
+    def get(self,request,format="none"):
+        data = request.data
+        print(data)
+        resp = {}
+        return Response(resp,status.HTTP_200_OK)
 
     def post(self,request,format="None"):
         data = request.data 
@@ -282,7 +291,13 @@ class OrderV(APIView):
             client.save()
 
         resp['client'] = ClientSerializer(client).data
-        order = Order.objects.create(client = client,total = data['sub_options']['total'])
+        order = Order.objects.create(client = client,total = data['sub_options']['total'],paid=data['sub_options']['paid'],mode=data['sub_options']['modePayment'])
+        while True:
+            idd = format_fact(random.randrange(0,99999))
+            orders = Order.objects.filter(o_id=idd)
+            if len(orders) == 0:
+                break
+        order.o_id = idd
         resp['order'] = OrderSerializer(order).data
         order.save()
         temp = []
@@ -299,4 +314,23 @@ class OrderV(APIView):
         print(resp)
         return Response(resp,status.HTTP_200_OK)
         
+class OrderFilter(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,format="none"):
+        data = request.data
+        print(data)
+        orders = Order.objects.filter(date__gte=data['startDate'],date__lte = data['endDate'])
+        resp = []
+        for order in orders:
+            client = ClientSerializer(order.client).data
+            o = OrderSerializer(order).data
+            details = OrderDetailsSerializer(order.orderdetails_set.all(), many=True).data
+            resp.append({
+                'client':client,
+                'order':o,
+                'details' : details
+            })
+            
+        return Response(resp,status.HTTP_200_OK)
 

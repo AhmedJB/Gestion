@@ -25,6 +25,7 @@ urlpatterns = [
 
     # order urls 
     path('order',OrderV.as_view()),
+    path('filterorder',OrderFilter.as_view()),
 
 
 

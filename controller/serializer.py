@@ -33,7 +33,7 @@ class ClientSerializer(ModelSerializer):
 class OrderSerializer(ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id','total','date']
+        fields = ['id','total','paid','mode','o_id','date']
 
 class OrderDetailsSerializer(ModelSerializer):
     class Meta:
