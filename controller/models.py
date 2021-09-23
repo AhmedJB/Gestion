@@ -17,10 +17,23 @@ class Provider(models.Model):
     email = models.CharField(max_length=255,default='')
     phone = models.CharField(max_length=255,default='')
     address = models.CharField(max_length=255,default="")
+    credit = models.FloatField(default=0)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+class Client(models.Model):
+    name = models.CharField(max_length=255,default='')
+    email = models.CharField(max_length=255,default='')
+    phone = models.CharField(max_length=255,default='')
+    address = models.CharField(max_length=255,default="")
+    credit = models.FloatField(default=0)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
 
 
 
@@ -29,6 +42,7 @@ class Product(models.Model):
     p_id = models.CharField(max_length=255,default='')
     name = models.CharField(max_length=255,default='')
     ptype = models.CharField(max_length=255,default='')
+    place = models.IntegerField(default=0)
     price_vente = models.FloatField(default=0)
     price_achat = models.FloatField(default=0)
     quantity = models.IntegerField(default=0)
@@ -52,3 +66,18 @@ class Invoices(models.Model):
 
     def __str__(self):
         return self.f_id
+
+
+class Order(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    total = models.FloatField(default=0)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.date)
+
+class OrderDetails(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=255)
+    quantity = models.IntegerField(default=0)
+    prix = models.FloatField(default=0)

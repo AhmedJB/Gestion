@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext , Fragment} from "react";
 import { motion } from "framer-motion";
 import { UserContext } from "../contexts/UserContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBoxes, faCoffee, faFileInvoice, faPeopleCarry, faSignOutAlt, faTachometerAlt } from '@fortawesome/free-solid-svg-icons'
+import { faBoxes, faCoffee, faFileInvoice, faHistory, faPeopleCarry, faSignOutAlt, faTachometerAlt, faUsers } from '@fortawesome/free-solid-svg-icons'
 import {Link} from "react-router-dom";
 
 const variants = {
@@ -22,10 +22,10 @@ const variants = {
   }
 };
 
-const colors = ["#FF008C", "#D309E1", "#9C1AFF", "#7700FF","#4400FF"];
-const icons = [<FontAwesomeIcon icon={faTachometerAlt} />,<FontAwesomeIcon icon={faPeopleCarry} />,<FontAwesomeIcon icon={faBoxes} />,<FontAwesomeIcon icon={faFileInvoice} />,<FontAwesomeIcon icon={faSignOutAlt} />]
-const text = ["Dashboard","Fournisseur","Stock","Facture","Log Out"]
-const links = ['/app/pannel','/app/supplier','/app/supply','/app/invoice']
+const colors = ["#FF008C","#e65eef", "#D309E1", "#9C1AFF", "#7700FF","#6029f5","#4400FF"];
+const icons = [<FontAwesomeIcon icon={faTachometerAlt} />,<FontAwesomeIcon icon={faPeopleCarry} />,<FontAwesomeIcon icon={faUsers} /> ,<FontAwesomeIcon icon={faBoxes} />,<FontAwesomeIcon icon={faFileInvoice} />,<FontAwesomeIcon icon={faHistory}></FontAwesomeIcon> ,<FontAwesomeIcon icon={faSignOutAlt} />]
+const text = ["Dashboard","Fournisseur","Clients","Stock","Facture","History","Log Out"]
+const links = ['/app/pannel','/app/supplier','/app/client','/app/supply','/app/invoice','/app/historyv']
 
 
 export const MenuItem = ({ i }) => {

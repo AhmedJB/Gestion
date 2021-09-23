@@ -41,6 +41,24 @@
     filter: brightness(1.5);
   }
 
+
+
+  .MuiFormLabel-root,.MuiInputBase-input {
+      color:var(--text) !important;
+
+  }
+
+  .MuiInput-underline:after{
+      border-color:  var(--second) !important;
+  }
+  .MuiInput-underline:before{
+      border-color: var(--text) !important;
+  }
+
+  .MuiInput-underline:hover:before{
+      border-color: var(--purple) !important;
+  }
+
 a{
     text-decoration: none;
 }
@@ -677,7 +695,6 @@ main{
     font-size:.9em;
     
 }
-
 
 
 

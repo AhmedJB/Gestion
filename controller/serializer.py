@@ -1,6 +1,6 @@
 from django.db.models.base import Model
 from rest_framework.serializers import ModelSerializer
-from .models import CustomUser,Product,Provider,Options,Invoices
+from .models import CustomUser,Product,Provider,Options,Invoices,Client,Order,OrderDetails
 
 
 
@@ -23,14 +23,28 @@ class RegisterSerializer(ModelSerializer):
 class ProviderSerializer(ModelSerializer):
     class Meta:
         model = Provider
-        fields = ['id','name','email','phone','address','date']
+        fields = ['id','name','email','credit','phone','address','date']
+
+class ClientSerializer(ModelSerializer):
+    class Meta:
+        model = Client
+        fields = ['id','name','email','credit','phone','address','date']
         
+class OrderSerializer(ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['id','total','date']
+
+class OrderDetailsSerializer(ModelSerializer):
+    class Meta:
+        model = OrderDetails
+        fields = ['id','product_name','quantity','prix']
 
 
 class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id','p_id','name','ptype','price_vente','price_achat','quantity']
+        fields = ['id','p_id','name','place','ptype','price_vente','price_achat','quantity']
 
 class OptionsSerializer(ModelSerializer):
     class Meta:

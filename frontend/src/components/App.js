@@ -10,6 +10,7 @@ import {
 // components
 import Sign from './Sign'
 import Pannel from './Pannel'
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 
 
@@ -23,6 +24,11 @@ import AnimateNav from './AnimateNav';
 import Supplier from './Supplier';
 import Stock from './Stock';
 import Invoice from './Invoice';
+import Client from './Client';
+import HistoryV from './HistoryV';
+import DateFnsUtils from '@date-io/date-fns';
+import frLocale from "date-fns/locale/fr";
+
 
 
 
@@ -42,6 +48,7 @@ const App = (props) => {
         <DataProvider>
         <ToastProvider>
         <UserProvider>
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={frLocale}>
         
         <Router>
         
@@ -57,11 +64,17 @@ const App = (props) => {
                 <Route path={ base + '/supplier'  } render={(props) =>  <Supplier  {...props} />}>
                     
                 </Route>
+                <Route path={ base + '/client'  } render={(props) =>  <Client  {...props} />}>
+                    
+                </Route>
 
                 <Route path={ base + '/invoice'  } render={(props) =>  <Invoice {...props} />  }>
                     
                 </Route>
                 <Route path={ base + '/supply'  } render={(props) =>  <Stock  {...props} />}>
+                    
+                </Route>
+                <Route path={ base + '/historyv'  } render={(props) =>  <HistoryV  {...props} />}>
                     
                 </Route>
 
@@ -70,6 +83,7 @@ const App = (props) => {
             </Switch>
 
         </Router>
+        </MuiPickersUtilsProvider>
         </UserProvider>
         </ToastProvider>
         </DataProvider>

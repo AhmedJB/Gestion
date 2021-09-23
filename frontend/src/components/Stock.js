@@ -31,6 +31,7 @@ function Stock(props) {
         price_vente : '',
         price_achat : '',
         quantity : '',
+        place : '',
 
       },
       options : {
@@ -80,6 +81,17 @@ function Stock(props) {
         
     ]);
 
+    const [Place,setPlace] = useState([
+      {
+        name : 'Depot',
+        value : 0
+      },
+      {
+        name: 'Comptoire',
+        value : 1
+      }
+    ])
+
     const [Body,setBody] = useState({
       fournisseur : '',
       product : {
@@ -88,6 +100,7 @@ function Stock(props) {
         price_vente : '',
         price_achat : '',
         quantity : '',
+        place : '',
 
       },
       options : {
@@ -189,6 +202,28 @@ function Stock(props) {
         }
         setBody(body);
   
+      }
+
+
+      function handlePlace(ps){
+        let body = {...Body};
+        if (ps == ''){
+          body.product.place = 0
+        }else{
+          body.product.place = ps[0].value;
+        }
+        setBody(body);
+      }
+
+      function handlePlacev2(ps){
+        let body = {...modifyData};
+        if (ps == ''){
+          body.product.place = 0
+        }else{
+          body.product.place = ps[0].value;
+        }
+        setModifyData(body);
+
       }
   
       function handleMetal(ms){
@@ -376,6 +411,26 @@ function Stock(props) {
         }
       }
 
+      function filterPlace(ps){
+        if (ps == ''){
+          updateProducts();
+        }else {
+          let arr = [];
+          let p = ps[0]
+          console.log(p);
+          for (let i = 0; i < Products.length; i++){
+            
+            if (Products[i].product.place == p.value){
+              arr.push(Products[i]);
+            }
+            
+          }
+          setProduct(arr);
+        
+        }
+
+      }
+
 
       async function modify(id){
         setModify(!ModifyOpen);
@@ -404,6 +459,8 @@ function Stock(props) {
         }
     
       }
+
+      
     
       async function ModifyProduct(id){
         let body = {...modifyData};
@@ -513,6 +570,8 @@ function Stock(props) {
 label="name" multi={false} values={[modifyData.fournisseur]} fvalue="id" placeholder="Choisir un Fournisseur" />
 <CustomSelect options={Options}  changeFunc={handleOptionv2}
   label="name" fvalue="value" values={[Options.find(opt => opt.value  == modifyData.product.ptype)]} placeholder="Choisir un Produit" />
+  <CustomSelect options={Place}  changeFunc={handlePlacev2}
+  label="name" fvalue="value" values={[Place.find(opt => opt.value  == modifyData.product.place)]} placeholder="Choisir une Place" />
               </div>
               
                 
@@ -567,6 +626,8 @@ label="name" multi={false} values={[modifyData.fournisseur]} fvalue="id" placeho
 label="name" multi={false} fvalue="id" placeholder="Choisir un Fournisseur" />
 <CustomSelect options={Options}  changeFunc={handleOption}
   label="name" fvalue="value" placeholder="Choisir un Produit" />
+  <CustomSelect options={Place}  changeFunc={handlePlace}
+  label="name" fvalue="value"  placeholder="Choisir une Place" />
               </div>
               
                 
@@ -620,6 +681,8 @@ label="name" multi={false} fvalue="id" placeholder="Choisir un Fournisseur" />
   label="name" fvalue="id" placeholder="Choisir un Fournisseur" />
                     <CustomSelect options={Options} changeFunc={filterCat}
   label="name" fvalue="value" placeholder="Choisir une Categorie" />
+  <CustomSelect options={Place} changeFunc={filterPlace}
+  label="name" fvalue="value" placeholder="Choisir une Place" />
   <CustomSelect options={getarray('product')} changeFunc={filterProduct}
   label="p_id" fvalue="p_id" placeholder="Choisir un ID" />
 

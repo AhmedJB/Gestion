@@ -25,6 +25,7 @@ function Supplier(props) {
     email: '',
     phone: '',
     address: '',
+    credit : '',
     id: null
   });
 
@@ -98,6 +99,13 @@ function Supplier(props) {
     }
   }
 
+  function formatPrice2(e) {
+    let t = e.target
+    if (t.value != '') {
+      t.value = t.value.split(' ')[0].replace(',', '.') + ' DH'
+    }
+  }
+
   function  filter(v){
     var d = [];
     if (v != ''){
@@ -146,12 +154,16 @@ function Supplier(props) {
     let email = document.getElementById('email_m').value;
     let phone = document.getElementById('phone_m').value;
     let address = document.getElementById('add_m').value;
+    let credit = document.getElementById('credit_m').value.split(' ')[0];
+    let creditp = document.getElementById('credit_pm').value.split(' ')[0];
 
     let body = {
       name,
       email,
       phone,
-      address
+      address,
+      credit,
+      creditp
     }
     let resp = await postReq('modprovider/'+String(id),body);
     if (resp){
@@ -194,6 +206,7 @@ function Supplier(props) {
         <th classname="task-title">Email</th>
         <th classname="status">Tel</th>
         <th  className="address">Address</th>
+        <th>Dette</th>
         <th classname="tel">Date</th>
         <th></th>
         <th></th>
@@ -206,6 +219,7 @@ function Supplier(props) {
         <td className="task-title">{e.email}</td>
         <td className="status">{e.phone}</td>
         <td  className="address">{e.address}</td>
+        <td className="credit">{e.credit + ' DH'}</td>
         <td className="date">
           {new Date(e.date).toLocaleDateString("fr-FR", options)}
         </td>
@@ -235,12 +249,16 @@ function Supplier(props) {
             <input type="text" defaultValue={modifyData.phone} id="phone_m"></input>
             <label for='add'>Address</label>
             <input type="text" defaultValue={modifyData.address} id="add_m"></input>
+            <label for='add'>Dette</label>
+            <input type="text" defaultValue={modifyData.credit + " DH"} onBlur={formatPrice2} id="credit_m"></input>
+            <label for='add'>Dette Paye</label>
+            <input type="text" defaultValue={'0 DH'} onBlur={formatPrice2} id="credit_pm"></input>
   
             <button id="submit"  onClick={() => modifySupplier(modifyData.id)}>Modifier</button>
           </div>
         </Modal>
       <Modal open={open} closeFunction = {setOpen}>
-        <h1 className='title-modal'>Ajout de fournisseur</h1>
+        <h1 className='title-modal'>Modification de fournisseur</h1>
         <div className="modal-input">
           <label for="name">Nom</label>
           <input type="text" id="name"></input>
