@@ -148,7 +148,7 @@ function Sign(props) {
 
 return ( loading ? loader: ( User.logged ? <Redirect
   to={{
-    pathname: "/app/pannel",  
+    pathname: "/app/supplier",  
     state: { success : true }
   }}
   /> :  html ));
