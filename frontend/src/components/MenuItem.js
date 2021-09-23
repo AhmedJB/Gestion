@@ -50,7 +50,7 @@ export const MenuItem = ({ i }) => {
       variants={variants}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      onClick={text[i] == 'Log Out' ? logout : "" }
+      onClick={text[i] == 'Deconnexion' ? logout : "" }
     ><Link  to={links[i]}>
       <div className="icon-placeholder" style={style} > {ic}  </div>
 
