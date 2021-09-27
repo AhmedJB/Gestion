@@ -60,7 +60,7 @@
   }
 
 a{
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 body{
@@ -76,6 +76,7 @@ body{
     position: relative;
 
 }
+
 
 #root{
     height:100%;

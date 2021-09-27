@@ -15,14 +15,14 @@ const variants = {
 /* const itemIds = [0,1,2,3,4]; */
 const itemIds = [0, 1, 2, 3,4,5];
 
-export const Navigation = () => (
-  <motion.ul variants={variants}>
+export const Navigation = React.forwardRef((props,ref) => (
+  <motion.ul ref={ref} variants={variants}>
       <BrandItem />
     {itemIds.map(i => (
       <MenuItem i={i} key={i} />
     ))}
     <MenuItem i={6} key={6} />
   </motion.ul>
-);
+));
 
 

@@ -179,8 +179,11 @@ class AddProduct(APIView):
 
     def post(self,request,format=None):
         data = request.data 
+        print(data)
         supplier = Provider.objects.filter(id=data['fournisseur'])[0]
-        product = supplier.product_set.create(name=data['product']['name'],ptype=data['product']['ptype'],place = int(data['product']['place']),price_vente=data['product']['price_vente'],price_achat=data['product']['price_achat'],quantity=data['product']['quantity'])
+        if (supplier.credit + ((float(data['product']['quantity']) * float(data['product']['price_achat'])) - float(data['product']['paid']))):
+            supplier.credit += ((float(data['product']['quantity']) * float(data['product']['price_achat'])) - float(data['product']['paid']))
+        product = supplier.product_set.create(name=data['product']['name'],ptype=data['product']['ptype'],price_vente=data['product']['price_vente'],price_achat=data['product']['price_achat'],quantity=data['product']['quantity'],paid=data['product']['paid'])
         while True:
             idd = format_number(random.randrange(0,9999999999999))
             orders = Product.objects.filter(p_id=idd)
@@ -189,6 +192,7 @@ class AddProduct(APIView):
         
         product.p_id = idd
         product.save()
+        supplier.save()
         options = product.options_set.create(metal=data['options']['metal'],type=data['options']['type'])
         options.save()
         resp = {
@@ -235,17 +239,25 @@ class ModifyProduct(APIView):
         p = Product.objects.filter(p_id = id)[0]
         print(data)
         supplier = Provider.objects.filter(id=data['fournisseur']['id'])[0]
+        credit = (p.paid - float(data['product']['paid']))
+        if (supplier.credit + credit >= 0):
+            supplier.credit   += credit
+        else:
+            supplier.credit = 0
+        
         p.provider = supplier
         p.name=data['product']['name']
         p.ptype=data['product']['ptype']
         p.price_vente=data['product']['price_vente']
         p.price_achat=data['product']['price_achat']
         p.quantity=data['product']['quantity']
-        p.place = int(data['product']['place'])
+        p.paid  = float(data['product']['paid'])
+        #p.place = int(data['product']['place'])
         opt = p.options_set.all()[0]
         opt.metal = data['options']['metal']
         opt.type = data['options']['type']
         p.save()
+        supplier.save()
         opt.save()
 
         resp = {
@@ -320,7 +332,7 @@ class OrderFilter(APIView):
     def post(self,request,format="none"):
         data = request.data
         print(data)
-        orders = Order.objects.filter(date__gte=data['startDate'],date__lte = data['endDate'])
+        orders = Order.objects.filter(date__gte=data['startdate'],date__lte = data['enddate']).order_by('-date')
         resp = []
         for order in orders:
             client = ClientSerializer(order.client).data

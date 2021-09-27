@@ -32,6 +32,7 @@ function Stock(props) {
         price_achat : '',
         quantity : '',
         place : '',
+        paid : '',
 
       },
       options : {
@@ -317,10 +318,11 @@ function Stock(props) {
         body.product.price_achat = document.getElementById('achat').value.split(' ')[0];
         body.product.price_vente = document.getElementById('vente').value.split(' ')[0];
         body.product.quantity = document.getElementById('qt').value;
+        body.product.paid = document.getElementById('paid').value.split(' ')[0];
   
         setBody(body);
   
-        let resp = await postReq('product',Body);
+        let resp = await postReq('product',body);
         if (resp){
           addToast("Succès", {
             appearance: "success",
@@ -474,10 +476,11 @@ function Stock(props) {
         body.product.price_achat = document.getElementById('achat').value.split(' ')[0];
         body.product.price_vente = document.getElementById('vente').value.split(' ')[0];
         body.product.quantity = document.getElementById('qt').value;
+        body.product.paid = document.getElementById('paid').value.split(' ')[0];
   
         setModifyData(body);
   
-        let resp = await postReq('modproduct/'+body.product.p_id,modifyData);
+        let resp = await postReq('modproduct/'+body.product.p_id,body);
         if (resp){
           addToast("Succès", {
             appearance: "success",
@@ -520,6 +523,7 @@ function Stock(props) {
           <th>Quantite</th>
           <th classname="tel">Prix Achat</th>
           <th classname="tel">Prix Vente</th>
+          <th>Montant Payé</th>
           <th classname="tel">Fournisseur</th>
           <th></th>
           <th></th>
@@ -539,6 +543,7 @@ function Stock(props) {
           <td classname="status">{e.product.quantity}</td>
           <td classname="status">{e.product.price_achat + ' DH'}</td>
           <td classname="status">{e.product.price_vente + ' DH'}</td>
+          <td>{e.product.paid + ' DH'}</td>
           <td classname="status">{getSupp(e.fournisseur.id)}</td>
           <td className="edit" onClick={() => (modify(e.product.p_id))}><FontAwesomeIcon  icon={faEdit}  className="trash"/></td>
         <td onClick={() => {del(e.product.p_id)}} className="delete" ><FontAwesomeIcon  icon={faTrashAlt}  className="trash"/></td>
@@ -570,8 +575,8 @@ function Stock(props) {
 label="name" multi={false} values={[modifyData.fournisseur]} fvalue="id" placeholder="Choisir un Fournisseur" />
 <CustomSelect options={Options}  changeFunc={handleOptionv2}
   label="name" fvalue="value" values={[Options.find(opt => opt.value  == modifyData.product.ptype)]} placeholder="Choisir un Produit" />
-  <CustomSelect options={Place}  changeFunc={handlePlacev2}
-  label="name" fvalue="value" values={[Place.find(opt => opt.value  == modifyData.product.place)]} placeholder="Choisir une Place" />
+  {/* <CustomSelect options={Place}  changeFunc={handlePlacev2}
+  label="name" fvalue="value" values={[Place.find(opt => opt.value  == modifyData.product.place)]} placeholder="Choisir une Place" /> */}
               </div>
               
                 
@@ -606,6 +611,10 @@ label="name" multi={false} values={[modifyData.fournisseur]} fvalue="id" placeho
               <label for="vente">Prix Vente</label>
               <input type="text" placeholder="0 DH" defaultValue={modifyData.product.price_vente} onBlur={formatPrice} id="vente"></input>
               </div>
+              <div className="input-wrapper">
+              <label for="vente">Montant Payé</label>
+              <input type="text" placeholder="0 DH" defaultValue={modifyData.product.paid} onBlur={formatPrice} id="paid"></input>
+              </div>
               </div>
       
               
@@ -626,8 +635,8 @@ label="name" multi={false} values={[modifyData.fournisseur]} fvalue="id" placeho
 label="name" multi={false} fvalue="id" placeholder="Choisir un Fournisseur" />
 <CustomSelect options={Options}  changeFunc={handleOption}
   label="name" fvalue="value" placeholder="Choisir un Produit" />
-  <CustomSelect options={Place}  changeFunc={handlePlace}
-  label="name" fvalue="value"  placeholder="Choisir une Place" />
+  {/* <CustomSelect options={Place}  changeFunc={handlePlace}
+  label="name" fvalue="value"  placeholder="Choisir une Place" /> */}
               </div>
               
                 
@@ -662,6 +671,10 @@ label="name" multi={false} fvalue="id" placeholder="Choisir un Fournisseur" />
               <label for="vente">Prix Vente</label>
               <input type="text" placeholder="0 DH" onBlur={formatPrice} id="vente"></input>
               </div>
+              <div className="input-wrapper">
+              <label for="vente">Montant Payé</label>
+              <input type="text" placeholder="0 DH" onBlur={formatPrice} id="paid"></input>
+              </div>
               </div>
       
               
@@ -681,8 +694,8 @@ label="name" multi={false} fvalue="id" placeholder="Choisir un Fournisseur" />
   label="name" fvalue="id" placeholder="Choisir un Fournisseur" />
                     <CustomSelect options={Options} changeFunc={filterCat}
   label="name" fvalue="value" placeholder="Choisir une Categorie" />
-  <CustomSelect options={Place} changeFunc={filterPlace}
-  label="name" fvalue="value" placeholder="Choisir une Place" />
+  {/* <CustomSelect options={Place} changeFunc={filterPlace}
+  label="name" fvalue="value" placeholder="Choisir une Place" /> */}
   <CustomSelect options={getarray('product')} changeFunc={filterProduct}
   label="p_id" fvalue="p_id" placeholder="Choisir un ID" />
 

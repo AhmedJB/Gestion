@@ -1,10 +1,10 @@
 :root {
     --body-bg: rgb(204, 204, 204);
     --white: #ffffff;
-    --darkWhite: #ccc;
+    --darkWhite: rgb(80, 80, 80);
     --black: #000000;
     --dark: #615c60;
-    --themeColor: #b187ff;
+    --themeColor: #303030;
     --pageShadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 }
 
@@ -23,13 +23,17 @@
     width: 21cm;
     height: 29.6cm;
     overflow: hidden;
+    padding:.5cm  .5cm 0px .5cm;
+    color: #101010;
     
     
 }
 
 
+
+
 #bon-title{
-    padding:10px 20px 10px 10px;
+    margin:0.4cm 0.4cm 0.4cm 10px;
     font-weight: 150;
 
 }
@@ -43,8 +47,13 @@
     left:50%;
     transform: translate(-50%,-50%);
     z-index:-1;
-    opacity: .3;
+    opacity: .4;
 }
+
+/* .imgfluid{
+    max-width: 55%;
+
+} */
 
 .page[size="A4"] {
     width: 21cm;
@@ -57,7 +66,7 @@
     border-bottom: 3px solid var(--darkWhite);
 }
 .row-custom{
-    width:18cm;
+    width:19.6cm;
     display:flex;
     align-items: center;
     justify-content: space-between;
@@ -78,7 +87,7 @@
 }
 
 .logo-facture img {
-    height: 60px;
+    height: 80px;
 }
 
 .top-left p {
@@ -146,7 +155,7 @@
 
 .store-user p {
     margin: 0;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .store-user .address {
@@ -267,7 +276,7 @@
 #footer-facture {
     text-align: center;
     position: absolute;
-    bottom:5px;
+    bottom:.5cm;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -291,19 +300,26 @@
 
 #footer-facture .social{
     width:21cm;
-    padding-top: 3px;
+/*     padding-top: 3px; */
     display:flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    font-weight: 600;
+    color: black;
 }
 
 #footer-facture  .email{
     padding:15px;
     margin:0px;
     font-size:1em;
-    font-weight: 400;
+    font-weight: 600;
+    color: black;
 }
 
 
+.colortext{
+    color: black;
+    font-weight: 600;
+}
 

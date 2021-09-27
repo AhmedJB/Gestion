@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext , Fragment} from "react";
+import React, { useState, useEffect, useContext,createRef, Fragment} from "react";
 import { UserContext } from "../contexts/UserContext";
 import {Link} from "react-router-dom";
 import { useRef } from "react";
@@ -16,10 +16,12 @@ import { useDetectClickOutside } from 'react-detect-click-outside';
 function AnimateNav(props){
     const [User, setUser] = useContext(UserContext);
     
+    
 
     const sidebar = {
-        open: (height = 1000) => ({
-          clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
+        open: (h = 1000) => ({
+          clipPath: `circle(${h[0] * 2 + 200}px at 40px 40px)`,
+          height: h[1],
           transition: {
             type: "spring",
             stiffness: 20,
@@ -96,6 +98,9 @@ function AnimateNav(props){
       const [isOpen, toggleOpen] = useCycle(false, true);
   const containerRef = useRef(null);
   const { height } = useDimensions(containerRef);
+  const nav = createRef(null);
+  const {h} = useDimensions(nav);
+
   const reff = useDetectClickOutside({ onTriggered: handleClick});
   
   return (
@@ -124,8 +129,8 @@ function AnimateNav(props){
       
     >
         
-      <motion.div className={isOpen ? "background" : "background fixed"} variants={sidebar}  />
-      {isOpen ?  <Navigation /> : ""}
+      <motion.div className="background" custom={[height,h]} variants={sidebar}  />
+      {isOpen ?  <Navigation ref={nav} /> : ""}
      
       <MenuToggle toggle={() => toggleOpen()} />
 

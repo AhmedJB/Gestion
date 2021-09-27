@@ -156,19 +156,28 @@ const materialTheme = createTheme({
   function changeStart(date){
     console.log(date);
     handleDateChange(date);
-    updateOrders();
+    updateOrders(date,null);
   }
 
   function changeEnd(date){
     console.log(date);
     handleEndChange(date);
-    updateOrders();
+    updateOrders(null,date);
   }
 
-  async function updateOrders(){
+  async function updateOrders(startdate=null , enddate = null){
+    if (!startdate){
+      startdate = startDate
+    }
+
+    if (!enddate){
+      enddate = endDate
+    }
+
+
     let body = {
-      startDate,
-      endDate
+      startdate,
+      enddate
     }
     let resp = await postReq('filterorder',body);
     if (resp){
@@ -237,17 +246,17 @@ function setOrderDetails(id){
 
 const bon = (
   <div id="invoice" className="page" size="A4">
-  <div className="p-5">
+  <div className="top-padding">
     <section className="top-content bb d-flex justify-content-between">
       <div className="logo-facture">
         <img src="/static/pics/LOGO-1.png" alt className="img-fluid" />
       </div>
       <img id="watermark" src="/static/pics/LOGOa.png" />
-      <div className="top-left">
+      {/* <div className="top-left">
         <div className="graphic-path">
           <p id="bon-title">Bon De livraison</p>
         </div>
-      </div>
+      </div> */}
     </section>
     <section className="store-user mt-5">
       <div className="col-12 center-elem">
@@ -300,8 +309,8 @@ const bon = (
           <tr>
             <td />
             <td />
-            <td className="bord">Total TTC:</td>
-            <td className="bord">{SelectedOrder.order.total + (SelectedOrder.order.total * 20 / 100)}DH</td>
+            <td className="bord">Total HT:</td>
+            <td className="bord">{SelectedOrder.order.total}DH</td>
           </tr>
         </tfoot>
       </table>
@@ -319,7 +328,7 @@ const bon = (
    {/*  <img src="/static/pics/cart.jpg" className="img-fluid cart-bg" alt /> */}
     <footer id="footer-facture">
       <hr />
-      <p className="m-0 text-center">
+      <p className="m-0 text-center  colortext">
         10 Lot Baraka Wiam Bensouda Mag 3 ‐ Fès / GSM: 06 61 08 56 62
       </p>
       <br />
@@ -354,17 +363,17 @@ const bon = (
 
 const template = (
   <div id="invoice" className="page" size="A4">
-  <div className="p-5">
+  <div className='top-padding'>
     <section className="top-content bb d-flex justify-content-between">
       <div className="logo-facture">
         <img src="/static/pics/LOGO-1.png" alt className="img-fluid" />
       </div>
       <img id="watermark" src="/static/pics/LOGOa.png" />
-      <div className="top-left">
+      {/* <div className="top-left">
         <div className="graphic-path">
           <p>Facture</p>
         </div>
-      </div>
+      </div> */}
     </section>
     <section className="store-user mt-5">
       <div className="col-12 center-elem">
@@ -466,7 +475,7 @@ const template = (
    {/*  <img src="/static/pics/cart.jpg" className="img-fluid cart-bg" alt /> */}
     <footer id="footer-facture">
       <hr />
-      <p className="m-0 text-center">
+      <p className="m-0 text-center colortext">
         10 Lot Baraka Wiam Bensouda Mag 3 ‐ Fès / GSM: 06 61 08 56 62
       </p>
       <br />

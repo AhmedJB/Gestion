@@ -44,7 +44,7 @@ class OrderDetailsSerializer(ModelSerializer):
 class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id','p_id','name','place','ptype','price_vente','price_achat','quantity']
+        fields = ['id','p_id','name','paid','ptype','price_vente','price_achat','quantity']
 
 class OptionsSerializer(ModelSerializer):
     class Meta:
