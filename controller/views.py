@@ -10,6 +10,9 @@ from django.core.files import File
 from .helper import format_fact, format_number
 from br_handler import Generator
 import random
+import datetime as d
+from datetime import datetime, date 
+from dateutil  import relativedelta
 
 # Create your views here.
 
@@ -444,4 +447,29 @@ class ModOrder(APIView):
         o.mode = data['mode']
         o.save()
         return Response({} , status.HTTP_200_OK)
+
+
+def convertdatetime(n):
+    m = datetime.min.time()
+    return datetime.combine(n,m)
+
+def add_day_date(dt,interval):
+    return convertdatetime(dt+ relativedelta(days=interval)) 
+
+def sub_day_date(dt,interval):
+    return convertdatetime(dt+ relativedelta(days=interval)) 
+
+def add_month_date(dt,interval):
+    return convertdatetime(dt+ relativedelta(months=interval)) 
+
+def sub_month_date(dt,interval):
+    return convertdatetime(dt- relativedelta(months=interval)) 
+
+
+class GetStable(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request,format=None):
+        now = datetime.now()
+
 

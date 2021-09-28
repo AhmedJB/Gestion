@@ -367,7 +367,7 @@ function Echeance(props) {
   const html = (
     <Fragment>
       <Modal open={ConfirmOpen} closeFunction={setConfirm}>
-        <h1 className="title-modal m20">{"Voulez-vous supprimer le produit "+modifyData.name +" ?"}</h1>
+        <h1 className="title-modal m20">{"Voulez-vous supprimer l'echeance de "+modifyData.name +" ?"}</h1>
         <div className='modal-input-row'>
         <button onClick={() => {
                     del(modifyData.id);

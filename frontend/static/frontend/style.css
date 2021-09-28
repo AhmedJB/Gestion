@@ -64,6 +64,31 @@
       margin:5px;
   }
 
+  .pannel-container{
+      padding:30px;
+  }
+
+  .inner-row{
+      display: flex;
+      flex-wrap: wrap-reverse;
+      align-items: center;
+      justify-content: center;
+      width:100%;
+
+  }
+  .title-select-row{
+      display:flex;
+      align-items: center;
+      justify-content: space-around;
+  }
+
+  .grow{
+      width:100%;
+  }
+
+  .inline{
+      display: inline;
+  }
 a{
     text-decoration: none !important;
 }

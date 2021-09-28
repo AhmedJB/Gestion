@@ -115,7 +115,16 @@ function AnimateNav(props){
   const { height } = useDimensions(containerRef);
   const nav = createRef(null);
   //const {h} = isOpen ? useDimensions(nav) : "100vh";
-
+  const t = isOpen ? (() => {let t = document.querySelector('body');
+  console.log('test')
+  
+    t.style.overflowY = "hidden";
+    console.log(t.style.overflowY);
+})(): (() => {let t = document.querySelector('body');
+console.log(t);
+console.log('test2')
+t.style.overflowY = "auto";
+})();
   const reff = useDetectClickOutside({ onTriggered: handleClick});
   
   return (
