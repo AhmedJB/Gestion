@@ -19,16 +19,49 @@ urlpatterns = [
     path('getclients',OpenClient.as_view()),
     path('modclient/<int:id>',ModifyClient.as_view()),
     path('product',AddProduct.as_view()),
-    path('invoices',Invoice.as_view()),
+    
     path('modproduct/<str:id>',ModifyProduct.as_view()),
     path('getproduct/<str:id>',OrderProduct.as_view()),
 
     # order urls 
     path('order',OrderV.as_view()),
     path('filterorder',OrderFilter.as_view()),
+    path('modorder',ModOrder.as_view()),
+
+    # download barcode labels
+    path('downloadbr',postDownload.as_view()),
+
+    # Echeance views 
+    path('echeancesfilter',EcheanceFilter.as_view()),
+    path('createecheance',createEchance.as_view()),
+    path('modecheance/<int:id>',ModEcheance.as_view()),
+    path('delecheance/<int:id>',delEcheance.as_view()),
 
 
 
     ###
     path('download/<str:id>',Download.as_view()),
 ]
+
+"""
+3000 
+
+2000
+#### 1000
+
+4000
+
+2500
+
+#### 1500
+
+
+
+
+
+
+
+
+
+
+"""

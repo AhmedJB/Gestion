@@ -13,6 +13,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import { Preview, print } from 'react-html2pdf';
 import Modal from "./Modal";
 import "../../static/frontend/invoice.css"
+import CustomSelect from "./CustomSelect";
 
 
 
@@ -23,7 +24,14 @@ function HistoryV(props){
   const [Data, setData] = useContext(DataContext);
   const [startDate, handleDateChange] = useState(new Date(new Date().getTime() - (24 * 60 * 60 * 1000)));
   const [endDate,handleEndChange] = useState(new Date());
-  const [Details,setDetails] = useState([]);
+  const [Details,setDetails] = useState(
+    {
+      o_id : null,
+      mode : null,
+      paid : 0,
+      details : [],
+    }
+  );
   const [Open,setOpen] = useState(false);
   const [Orders, setOrders] = useState([]);
   const [SelectedOrder,setSelectedOrder] = useState({
@@ -238,8 +246,100 @@ function clearData(){
 function setOrderDetails(id){
   let order = getOrder(id);
   console.log(order);
-  setDetails(order.details)
+  let b = {
+    o_id : order.order.o_id,
+    mode : order.order.mode,
+    paid : order.order.paid,
+    details : order.details
+  }
+  setDetails(b)
   setOpen(!Open);
+}
+
+function handlePaiement(v){
+  console.log(v);
+  let c = {...Details};
+  c.mode = v[0].id;
+  setDetails(c);
+}
+
+function getDet(id) {
+  console.log(id);
+  for (let i = 0; i < Details.details.length; i++) {
+    console.log(Details.details[i].id == Number(id));
+    if (Details.details[i].id == Number(id)) {
+      return i
+    }
+  }
+  return -1
+}
+
+
+function modifyDetails(e,id){
+  let t = e.target;
+  let key = t.name;
+  let v = t.value;
+  let index = getDet(id);
+  if (index != -1){
+    let c = {...Details}
+    c.details[index][key] = Number(v);
+    console.log(c);
+    setDetails(c);
+  }
+  
+  
+}
+
+function handlePaid(e){
+  let t = e.target;
+  let c = {...Details}
+  c.paid = Number(t.value);
+  setDetails(c);
+}
+
+function formatPrice(e) {
+  let t = e.target
+  let val = ''
+  if (t.value == '') {
+    val = t.attributes.datavalue.value
+  } else {
+    val = t.value
+  }
+  t.value = val.split(' ')[0].replace(',', '.') + ' DH'
+}
+
+function clearField(e) {
+  let t = e.target
+  t.value = ''
+}
+
+function formatField(e) {
+  let t = e.target
+
+  let val = ''
+  if (t.value == '') {
+    val = t.attributes.datavalue.value
+  } else {
+    val = t.value
+  }
+
+  t.value = val
+}
+
+async function updateOrder(){
+  let resp = await postReq('modorder',Details);
+  if (resp){
+    addToast("Succès", {
+      appearance: "success",
+      autoDismiss: true,
+    });
+    updateOrders();
+  }else{
+    addToast("Erreur", {
+      appearance: "error",
+      autoDismiss: true,
+    });
+  }
 }
 
 
@@ -557,6 +657,25 @@ const html = (
 
       <Modal open={Open} closeFunction = {setOpen}>
             <h1 className='title-modal m20'>Detail de Commande</h1>
+            <div className="modal-input-row">
+            <CustomSelect
+              options={PaymentOptions}
+              changeFunc={handlePaiement}
+              label="name"
+              multi={false}
+              values={PaymentOptions.filter(
+                e => e.id == Details.mode
+              )}
+              fvalue="id"
+              placeholder="Mode de paiement"
+            />
+          </div>
+            <div className="modal-input">
+            <label for='add'>Montant Paye</label>
+            <input type="text" defaultValue={Details.paid +' DH'} onChange={handlePaid} onFocus= {clearField}
+                        onBlur ={formatPrice}
+                        datavalue={Details.paid} id="add_m"></input>
+            </div>
             <table id="status-table">
             <tbody>
               <tr>
@@ -565,7 +684,7 @@ const html = (
                 <th classname="tel">Prix</th>
               </tr>
 
-              {Details.map(e => {
+              {Details.details.map(e => {
                 return (
                   <tr>
                     <td className="date">{e.product_name}</td>
@@ -574,9 +693,11 @@ const html = (
                         key={e.id}
                         className="editable-field"
                         name="quantity"
-                        readOnly={true}
-                        id={e.id}
                         
+                        id={e.id}
+                        onChange = {(r) => modifyDetails(r,e.id)}
+                        onFocus= {clearField}
+                        onBlur ={formatField}
                         datavalue={e.quantity}
                         
                         defaultValue={e.quantity}
@@ -585,9 +706,15 @@ const html = (
                     <td className="status">
                       <input
                         className="editable-field"
-                        name="price_vente"
-                        readOnly={true}
+                        name="prix"
+                        
                         dataid={e.id}
+                        onChange = {(r) => modifyDetails(r,e.id)}
+                        onFocus= {clearField}
+                        onBlur ={formatPrice}
+                        datavalue={e.prix}
+                        
+                        
                         
                         defaultValue={e.prix + ' DH'}
                       ></input>
@@ -598,6 +725,7 @@ const html = (
               })}
             </tbody>
           </table>
+          <button id="submit"  onClick={() => updateOrder()}>Modifier</button>
       </Modal>
       
       <AnimateNav />

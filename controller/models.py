@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
 
@@ -85,3 +86,14 @@ class OrderDetails(models.Model):
     product_name = models.CharField(max_length=255)
     quantity = models.IntegerField(default=0)
     prix = models.FloatField(default=0)
+
+
+
+class Echeance(models.Model):
+    name = models.CharField(max_length=255)
+    type = models.IntegerField(default=0)
+    total = models.FloatField(default = 0)
+    paid = models.FloatField(default=0)
+    reste = models.FloatField(default=0)
+    dateEcheance = models.DateTimeField(default=timezone.now())
+    date = models.DateTimeField(auto_now_add=True)

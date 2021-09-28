@@ -2,12 +2,13 @@ from django.shortcuts import render,HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,permissions
-from .serializer import ClientSerializer, InvoiceSerializer, OrderDetailsSerializer, OrderSerializer, RegisterSerializer,ProviderSerializer,ProductSerializer,OptionsSerializer
+from .serializer import ClientSerializer, InvoiceSerializer, OrderDetailsSerializer, OrderSerializer, RegisterSerializer,ProviderSerializer,ProductSerializer,OptionsSerializer,EcheanceSerializer
 from .models import *
 from .tasks import execute_task
 from gestionStock.settings import MEDIA_ROOT
 from django.core.files import File
 from .helper import format_fact, format_number
+from br_handler import Generator
 import random
 
 # Create your views here.
@@ -59,13 +60,26 @@ class Download(APIView):
         else:
             return Response({"result" : 'failed'},status.HTTP_400_BAD_REQUEST)
 
-class Invoice(APIView):
+
+class postDownload(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def  get(self,request,format=None):
-        invoices =  Invoices.objects.all().order_by('-date')
-        ins = InvoiceSerializer(invoices,many=True).data
-        return Response(ins,status.HTTP_200_OK)
+    def post(self,request,format=None):
+        data = request.data 
+        print('here')
+        print(data)
+        if len(data) > 0:
+            g = Generator()
+            g.genPdf(data)
+            path = MEDIA_ROOT + '/br.pdf'
+            f = open(path, 'rb')
+            pdfFile = File(f)
+            response = HttpResponse(pdfFile.read())
+            response['Content-Disposition'] = 'attachment;'
+            return response
+        else:
+            return Response({"result" : 'failed'},status.HTTP_400_BAD_REQUEST)
+
 
 
 class AddProvider(APIView):
@@ -109,7 +123,10 @@ class ModifyProvider(APIView):
         supplier.email = data['email']
         supplier.phone = data['phone']
         supplier.address = data['address']
-        supplier.credit = float(data['credit']) - float(data['creditp'])
+        c = float(data['credit']) - float(data['creditp'])
+        if c < 0:
+            c = 0
+        supplier.credit = c
         supplier.save()
         s = ProviderSerializer(supplier).data
         return Response(s,status.HTTP_200_OK)
@@ -181,7 +198,7 @@ class AddProduct(APIView):
         data = request.data 
         print(data)
         supplier = Provider.objects.filter(id=data['fournisseur'])[0]
-        if (supplier.credit + ((float(data['product']['quantity']) * float(data['product']['price_achat'])) - float(data['product']['paid']))):
+        if (supplier.credit + ((float(data['product']['quantity']) * float(data['product']['price_achat'])) - float(data['product']['paid'])) >= 0):
             supplier.credit += ((float(data['product']['quantity']) * float(data['product']['price_achat'])) - float(data['product']['paid']))
         product = supplier.product_set.create(name=data['product']['name'],ptype=data['product']['ptype'],price_vente=data['product']['price_vente'],price_achat=data['product']['price_achat'],quantity=data['product']['quantity'],paid=data['product']['paid'])
         while True:
@@ -345,4 +362,86 @@ class OrderFilter(APIView):
             })
             
         return Response(resp,status.HTTP_200_OK)
+
+
+class EcheanceFilter(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def  get(self,request,format=None):
+        invoices =  Invoices.objects.all().order_by('-date')
+        ins = InvoiceSerializer(invoices,many=True).data
+        return Response(ins,status.HTTP_200_OK)
+
+    def post(self,request,format="none"):
+        data = request.data 
+        print(data)
+        orders = Echeance.objects.filter(dateEcheance__gte=data['startdate'],dateEcheance__lte = data['enddate']).order_by('dateEcheance')
+        resp = EcheanceSerializer(orders,many=True).data
+
+
+        return Response(resp,status.HTTP_200_OK)
+
+
+class createEchance(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,format=None):
+        data = request.data 
+        print(data)
+        e = Echeance.objects.create(name = data['name'],total = float(data['total']),paid = float(data['paid']),reste = float(data['total']) - float(data['paid']),dateEcheance = data['dateEcheance'],type=data['type'])
+        e.save()
+        return Response(EcheanceSerializer(e).data,status.HTTP_200_OK)
+
+class ModEcheance(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,id,format=None):
+        data = request.data 
+        print(data)
+        e = Echeance.objects.filter(id=id)[0]
+        e.total = float(data['total'])
+        e.paid = float(data['paid'])
+        e.reste = float(data['total']) - float(data['paid'])
+        e.dateEcheance = data['dateEcheance']
+        e.save()
+        return Response(EcheanceSerializer(e).data,status.HTTP_200_OK)
+
+class delEcheance(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,id,format=None):
+        e = Echeance.objects.filter(id=id)[0]
+        e.delete()
+        return Response(EcheanceSerializer(e).data,status.HTTP_200_OK)
+
+
+
+class ModOrder(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,format="none"):
+        data = request.data
+        print(data)
+        o = Order.objects.filter(o_id = data['o_id'])[0]
+        total = 0
+        for d in data['details']:
+            total += (d['quantity'] * d['prix'])
+            od = o.orderdetails_set.filter(id=d['id'])[0]
+            od.quantity = d['quantity']
+            od.prix = d['prix']
+            od.save()
+        print(total)
+        c = (total - data['paid']) - (o.total - o.paid)
+        print(c)
+        client = o.client
+        if (client.credit + c == 0):
+            client.credit = 0
+        else:
+            client.credit += c
+        client.save()
+        o.total = total
+        o.paid = data['paid']
+        o.mode = data['mode']
+        o.save()
+        return Response({} , status.HTTP_200_OK)
 

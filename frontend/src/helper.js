@@ -192,6 +192,38 @@ export async function postReq(url,body){
 }
 
 
+export async function post_download_file(url,name,body){
+    let access = sessionStorage.getItem('accessToken');
+    let headers = set_header(access);
+
+    let options  = {
+        method : 'post',
+        body : JSON.stringify(body),
+        headers : headers
+    }
+
+    let preResp = await fetch(api + url,options);
+    if (preResp.ok){
+        let resp = await preResp.blob();
+        fileDownload(resp,name);
+        return true;
+    }else if (preResp.status == 401){
+        let dec = await refreshToken();
+        if (dec){
+            post_download_file(url);
+        }else{
+            
+            return false;
+        }
+    }else {
+        console.log('other errors');
+        return false;
+    }
+
+
+}
+
+
 export async function download_file(url,name){
     let access = sessionStorage.getItem('accessToken');
     let headers = set_header(access);

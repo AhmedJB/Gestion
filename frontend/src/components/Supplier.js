@@ -202,7 +202,7 @@ function Supplier(props) {
           <table id="status-table">
     <tbody>
       <tr>
-        <th className="date">Fournisseur</th>
+        <th className="date">Nom</th>
         <th classname="task-title">Email</th>
         <th classname="status">Tel</th>
         <th  className="address">Address</th>

@@ -204,11 +204,11 @@ function Client(props) {
           <table id="status-table">
     <tbody>
       <tr>
-        <th className="date">Client</th>
+        <th className="date">Nom</th>
         <th classname="task-title">Email</th>
         <th classname="status">Tel</th>
         <th  className="address">Address</th>
-        <th>Dette</th>
+        <th>Credit</th>
         <th classname="tel">Date</th>
         <th></th>
         <th></th>
@@ -251,9 +251,9 @@ function Client(props) {
             <input type="text" defaultValue={modifyData.phone} id="phone_m"></input>
             <label for='add'>Address</label>
             <input type="text" defaultValue={modifyData.address} id="add_m"></input>
-            <label for='add'>Dette</label>
+            <label for='add'>Credit</label>
             <input type="text" defaultValue={modifyData.credit + " DH"} onBlur={formatPrice2} id="credit_m"></input>
-            <label for='add'>Dette Paye</label>
+            <label for='add'>Credit Paye</label>
             <input type="text" defaultValue={'0 DH'} onBlur={formatPrice2} id="credit_pm"></input>
   
             <button id="submit"  onClick={() => modifyClient(modifyData.id)}>Modifier</button>

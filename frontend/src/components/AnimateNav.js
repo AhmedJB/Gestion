@@ -17,10 +17,11 @@ function AnimateNav(props){
     const [User, setUser] = useContext(UserContext);
     
     
+    
 
     const sidebar = {
         open: (h = 1000) => ({
-          clipPath: `circle(${h[0] * 2 + 200}px at 40px 40px)`,
+          clipPath: `circle(110vh at 40px 40px)`,
           height: h[1],
           transition: {
             type: "spring",
@@ -43,21 +44,35 @@ function AnimateNav(props){
       };
 
     const navbar = {
-      open : {
+      open :(h = 1000) => ({
+        clipPath: `circle(110vh at 40px 40px)`,
         zIndex:10,
-        width:300
-      },
+        width:300,
+        transition:{
+          clipPath: {
+            type: "spring",
+            stiffness: 50,
+            restDelta: 2
+          }
+        }
+      }),
       closed : {
+        clipPath: "circle(30px at 40px 40px)",
         zIndex:1,
         transition : {
+          clipPath:{
+            type: "spring",
+            stiffness: 50,
+            restDelta: 2
+          },
           zIndex:{
             delay:1
           },
           width :{
             delay:1.2
           }
-        }
-        , width:0
+        },
+        width:300
       }
     }
 
@@ -99,7 +114,7 @@ function AnimateNav(props){
   const containerRef = useRef(null);
   const { height } = useDimensions(containerRef);
   const nav = createRef(null);
-  const {h} = useDimensions(nav);
+  //const {h} = isOpen ? useDimensions(nav) : "100vh";
 
   const reff = useDetectClickOutside({ onTriggered: handleClick});
   
@@ -123,14 +138,15 @@ function AnimateNav(props){
       initial={false}
       animate={isOpen ? "open" : "closed"}
       className={isOpen ? "overflow":""}
-      variants={navbar}
       custom={height}
+      variants={navbar}
+      
       ref={containerRef}
       
     >
         
-      <motion.div className="background" custom={[height,h]} variants={sidebar}  />
-      {isOpen ?  <Navigation ref={nav} /> : ""}
+      {/* <motion.div className="background"  variants={sidebar}  /> */}
+      {isOpen ?  <Navigation  /> : ""}
      
       <MenuToggle toggle={() => toggleOpen()} />
 

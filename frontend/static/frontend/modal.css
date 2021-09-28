@@ -97,7 +97,7 @@
 
 }
 
-.modal-input label{
+.modal-input label:not(.MuiInputLabel-root){
     font-size:.8em;
     color:var(--text);
     letter-spacing:2px;
@@ -113,7 +113,7 @@
   margin:0px 10px 0px 0px;
 }
 
-.modal-input input:not(.CustomDropdown input){
+.modal-input input:not(.CustomDropdown input):not(.MuiInput-input){
     padding:5px;
     outline:none;
     width:280px;

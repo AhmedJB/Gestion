@@ -23,7 +23,7 @@ import Nav from './Nav';
 import AnimateNav from './AnimateNav';
 import Supplier from './Supplier';
 import Stock from './Stock';
-import Invoice from './Invoice';
+import Echeance from './Echeance';
 import Client from './Client';
 import HistoryV from './HistoryV';
 import DateFnsUtils from '@date-io/date-fns';
@@ -68,7 +68,7 @@ const App = (props) => {
                     
                 </Route>
 
-                <Route path={ base + '/invoice'  } render={(props) =>  <Invoice {...props} />  }>
+                <Route path={ base + '/echeance'  } render={(props) =>  <Echeance {...props} />  }>
                     
                 </Route>
                 <Route path={ base + '/supply'  } render={(props) =>  <Stock  {...props} />}>
