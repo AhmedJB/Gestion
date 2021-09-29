@@ -60,7 +60,7 @@ function Stock(props) {
     },
     {
       name: "Alimunium",
-      value: "alimunium",
+      value: "aluminium",
     },
   ]);
 
@@ -113,7 +113,7 @@ function Stock(props) {
   useEffect(() => {
     async function test() {
       let resp = await isLogged();
-      console.log(resp);
+      //console.log(resp);
       if (resp) {
         let obj = { ...User };
         obj.logged = true;
@@ -130,7 +130,7 @@ function Stock(props) {
 
     test().then((obj) => {
       setLoading(false);
-      console.log(obj);
+      //console.log(obj);
       if (props.location.state) {
         if (props.location.state.success) {
           addToast("connecté en tant que " + obj.username, {
@@ -259,7 +259,7 @@ function Stock(props) {
       body.options.metal = "";
       body.options.type = "";
     }
-    console.log(body);
+    //console.log(body);
     setModifyData(body);
   }
 
@@ -318,7 +318,7 @@ function Stock(props) {
         appearance: "success",
         autoDismiss: true,
       });
-      console.log(resp);
+      //console.log(resp);
       updateProducts();
       //updateSuppliers();
     } else {
@@ -411,7 +411,7 @@ function Stock(props) {
     } else {
       let arr = [];
       let p = ps[0];
-      console.log(p);
+      //console.log(p);
       for (let i = 0; i < Products.length; i++) {
         if (Products[i].product.place == p.value) {
           arr.push(Products[i]);
@@ -424,7 +424,7 @@ function Stock(props) {
   async function modify(id) {
     setModify(!ModifyOpen);
     let mod = Products.filter((e) => e.product.p_id == id)[0];
-    console.log(mod);
+    //console.log(mod);
     if (mod.product.ptype == "eau") {
       setViewModify(true);
     } else {
@@ -437,7 +437,7 @@ function Stock(props) {
   async function delData(id){
     setConfirm(!ConfirmOpen)
     let mod = Products.filter((e) => e.product.p_id == id)[0];
-    console.log(mod);
+    //console.log(mod);
     if (mod.product.ptype == "eau") {
       setViewModify(true);
     } else {
@@ -484,7 +484,7 @@ function Stock(props) {
         appearance: "success",
         autoDismiss: true,
       });
-      console.log(resp);
+      //console.log(resp);
       updateData();
       //updateSuppliers();
     } else {
@@ -496,8 +496,8 @@ function Stock(props) {
   }
 
   function checkChange(checked,val) {
-    console.log(checked)
-    console.log(val)
+    //console.log(checked)
+    //console.log(val)
     let copy = [...printIDs]
     if (checked){
       if (val != 'all'){
@@ -510,13 +510,13 @@ function Stock(props) {
     }else{
       if (val != 'all'){
       let index = printIDs.findIndex((i) => i == val);
-      console.log('value is ' + index)
+      //console.log('value is ' + index)
       copy.splice(index,1);
       }else{
         copy = []
       }
     }
-    console.log(copy);
+    //console.log(copy);
     setPrintIDs(copy);
     
   }
@@ -581,7 +581,7 @@ function Stock(props) {
           </tr>
 
           {Products.map((e) => {
-            console.log(e);
+            //console.log(e);
             return (
               <tr>
                 <td>

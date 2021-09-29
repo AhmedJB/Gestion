@@ -20,7 +20,7 @@ nav#sidebar {
   bottom: 0;
   width: 300px;
   min-height: 100vh;
-  height:100%;
+  height:100vh;
   background: var(--black);
   background: -webkit-linear-gradient(bottom right, #000000, #282828);
     background: -moz-linear-gradient(bottom right, #000000, #282828);

@@ -81,7 +81,7 @@ function CustomSelect(props) {
     searchBy={props.searchBy}
     color = "#b187ff"
     className ={props.clas ? props.clas + " CustomDropdown" : "CustomDropdown"} 
-    clearable = {true}
+    clearable = {props.clearable == false ? props.clearable : true}
     values = {props.values ? props.values : []}
     searchFn={test}
     noDataLabel={"Aucun resultat"}

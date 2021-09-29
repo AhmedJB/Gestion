@@ -225,7 +225,7 @@ class AddProduct(APIView):
     
     def get(self,request,format=None):
         resps = []
-        products = Product.objects.all()
+        products = Product.objects.all().order_by('-date')
         for product  in products:
             supplier = product.provider
             options = product.options_set.all()[0]

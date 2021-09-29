@@ -52,7 +52,7 @@ def write_name(label, width, height, name):
     s.fontSize = font_size
     #s.fillColor = random.choice((colors.black, colors.blue, colors.red, colors.green))
     label.add(s)
-    print(br_text)
+    #print(br_text)
     barcode_image_raw = barcode.createBarcodeImageInMemory('Code128', value=br_text, width=1000, height=1000)
     barcode_image = PIL.Image.open(BytesIO(barcode_image_raw))
     barcode_image.save("{0}.png".format(br_text), 'png')
@@ -89,14 +89,14 @@ class Generator:
 
     def generateBarcode(self,idd):
         with open('br.jpg', 'wb') as f:
-            print('idd : '+str(idd))
+            #print('idd : '+str(idd))
             EAN13(idd, writer=ImageWriter()).write(f,options = {"font_size":30,"module_width":0.5,"text_distance":2})
 
 
     def genPdf(self,ids):
         sheet = labels.Sheet(specs, write_name, border=False)
         for idd in ids:
-            print(idd)
+            #print(idd)
             #self.generateBarcode(idd[1])
             sheet.add_label(idd)
         sheet.save('media/br.pdf')
@@ -110,4 +110,4 @@ if __name__ == "__main__":
     g = Generator()
     l = [['radiateur dacia eau v25 mn 3nd si hamid','9655862692768'], ['radiateur dacia eau v25 mn 3nd si hamid','9655862692768']]
     g.genPdf(l)
-    print('generated')
+    #print('generated')

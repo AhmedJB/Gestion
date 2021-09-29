@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Echeance, Order, OrderDetails,Provider,Product,Options,Invoices
+from .models import CustomUser,Client, Echeance, Order, OrderDetails,Provider,Product,Options,Invoices
 
 # Register your models here.
 
@@ -12,3 +12,4 @@ admin.site.register(Invoices)
 admin.site.register(Order)
 admin.site.register(OrderDetails)
 admin.site.register(Echeance)
+admin.site.register(Client)

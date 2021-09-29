@@ -265,7 +265,12 @@ function Echeance(props) {
   }
 
   function handleUser(v){
-    setSelectedName(v[0].name);
+    if(v.length > 0){
+      setSelectedName(v[0].name);
+    }else{
+      setSelectedName(null);
+    }
+    
   }
 
   function formatPrice(e) {
@@ -427,6 +432,7 @@ function Echeance(props) {
               changeFunc={handleOption}
               label="name"
               fvalue="value"
+              clearable={false}
               values={[
                 Options.find((opt) => opt.value == SelectedOption ),
               ]}

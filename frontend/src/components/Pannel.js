@@ -132,8 +132,10 @@ function Pannel(props) {
       width: 0,
     },
     legend: {
+      fontSize: "18px",
       labels: {
         colors: "#fff",
+        
       },
     },
   });
