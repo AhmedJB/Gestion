@@ -98,7 +98,8 @@ class Generator:
         for idd in ids:
             #print(idd)
             #self.generateBarcode(idd[1])
-            sheet.add_label(idd)
+            for _ in range(int(idd[-1])):
+                sheet.add_label([idd[0],idd[1]])
         sheet.save('media/br.pdf')
         for idd in ids:
             os.remove('{0}.png'.format(str(idd[1])))

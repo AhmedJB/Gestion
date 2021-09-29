@@ -503,7 +503,7 @@ function Stock(props) {
       if (val != 'all'){
         copy.push(val);
       }else{
-        copy = Products.map(e => [e.product.name,e.product.p_id])
+        copy = Products.map(e => [e.product.name,e.product.p_id,e.product.quantity])
 
       }
       
@@ -588,7 +588,7 @@ function Stock(props) {
                   <Checkbox
                     checked={printIDs.findIndex(r => r[1] == e.product.p_id) != -1 ? true : false}
                     onChange={(t) => {
-                      checkChange(t.target.checked,[e.product.name,e.product.p_id]);
+                      checkChange(t.target.checked,[e.product.name,e.product.p_id,e.product.quantity]);
                     }}
                     sx={{
                       color: "#b187ff",
