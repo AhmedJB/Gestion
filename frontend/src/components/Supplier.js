@@ -17,6 +17,7 @@ function Supplier(props) {
   const [User, setUser] = useContext(UserContext);
   const [Data, setData] = useContext(DataContext);
   const [Suppliers, setSuppliers] = useState(Data.Suppliers);
+  const [ConfirmOpen,setConfirm] = useState(false);
 
   const [open,setOpen] = useState(false);
   const [ModiyOpen, setModify] = useState(false);
@@ -134,6 +135,7 @@ function Supplier(props) {
         autoDismiss: true,
       });
       updateSuppliers();
+      setConfirm(!ConfirmOpen);
     }
 
   }
@@ -147,6 +149,14 @@ function Supplier(props) {
     //let resp = await modifySupplier(id);
     
 
+  }
+
+  async function delData(id){
+    
+    let mod = Suppliers.filter(e => e.id == id)[0]
+    console.log(mod);
+    setModifyData(mod);
+    setConfirm(!ConfirmOpen)
   }
 
   async function modifySupplier(id){
@@ -198,6 +208,7 @@ function Supplier(props) {
 
   const DataTable = (
       <Fragment>
+        <div id="table-wrapper">
           
           <table id="status-table">
     <tbody>
@@ -224,13 +235,14 @@ function Supplier(props) {
           {new Date(e.date).toLocaleDateString("fr-FR", options)}
         </td>
         <td className="edit" onClick={() => (modify(e.id))}><FontAwesomeIcon  icon={faEdit}  className="trash"/></td>
-        <td onClick={() => {del(e.id)}} className="delete" ><FontAwesomeIcon  icon={faTrashAlt}  className="trash"/></td>
+        <td onClick={() => {delData(e.id)}} className="delete" ><FontAwesomeIcon  icon={faTrashAlt}  className="trash"/></td>
       </tr>
         )
       })}
       
     </tbody>
   </table>
+  </div>
       </Fragment>
     
 
@@ -238,6 +250,15 @@ function Supplier(props) {
 
   const html = (
     <Fragment>
+      <Modal open={ConfirmOpen} closeFunction={setConfirm}>
+        <h1 className="title-modal m20">{"Voulez-vous supprimer le fournisseur "+modifyData.name +" ?"}</h1>
+        <div className='modal-input-row'>
+        <button onClick={() => {
+                    del(modifyData.id);
+                    //delData(e.product.p_id);
+                  }} className="factsubmit" id="submit">Supprimer</button>
+        </div>
+      </Modal>
       <Modal open={ModiyOpen} closeFunction = {setModify}>
           <h1 className='title-modal'>Ajout de fournisseur</h1>
           <div className="modal-input">

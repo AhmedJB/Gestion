@@ -89,6 +89,15 @@
   .inline{
       display: inline;
   }
+  .apexcharts-tooltip-marker{
+      background-color:var(--second) !important;
+  }
+
+
+  #table-wrapper{
+      height:100%;
+      overflow-y: auto;
+  }
 a{
     text-decoration: none !important;
 }

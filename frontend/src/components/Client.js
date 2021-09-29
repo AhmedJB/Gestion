@@ -17,7 +17,7 @@ function Client(props) {
   const [User, setUser] = useContext(UserContext);
   const [Data, setData] = useContext(DataContext);
   const [Clients, setClients] = useState(Data.Clients);
-
+  const [ConfirmOpen,setConfirm] = useState(false);
   const [open,setOpen] = useState(false);
   const [ModiyOpen, setModify] = useState(false);
   const [modifyData, setModifyData] = useState({
@@ -135,6 +135,7 @@ function Client(props) {
         autoDismiss: true,
       });
       updateClients();
+      setConfirm(!ConfirmOpen);
     }
 
   }
@@ -148,6 +149,13 @@ function Client(props) {
     //let resp = await modifyClient(id);
     
 
+  }
+  async function delData(id){
+
+    let mod = Clients.filter(e => e.id == id)[0]
+    console.log(mod);
+    setModifyData(mod);
+    setConfirm(!ConfirmOpen);
   }
 
   async function modifyClient(id){
@@ -200,7 +208,7 @@ function Client(props) {
 
   const DataTable = (
       <Fragment>
-          
+          <div id="table-wrapper">
           <table id="status-table">
     <tbody>
       <tr>
@@ -226,13 +234,14 @@ function Client(props) {
           {new Date(e.date).toLocaleDateString("fr-FR", options)}
         </td>
         <td className="edit" onClick={() => (modify(e.id))}><FontAwesomeIcon  icon={faEdit}  className="trash"/></td>
-        <td onClick={() => {del(e.id)}} className="delete" ><FontAwesomeIcon  icon={faTrashAlt}  className="trash"/></td>
+        <td onClick={() => {delData(e.id)}} className="delete" ><FontAwesomeIcon  icon={faTrashAlt}  className="trash"/></td>
       </tr>
         )
       })}
       
     </tbody>
   </table>
+  </div>
       </Fragment>
     
 
@@ -240,8 +249,17 @@ function Client(props) {
 
   const html = (
     <Fragment>
+      <Modal open={ConfirmOpen} closeFunction={setConfirm}>
+        <h1 className="title-modal m20">{"Voulez-vous supprimer le client "+modifyData.name +" ?"}</h1>
+        <div className='modal-input-row'>
+        <button onClick={() => {
+                    del(modifyData.id);
+                    //delData(e.product.p_id);
+                  }} className="factsubmit" id="submit">Supprimer</button>
+        </div>
+      </Modal>
       <Modal open={ModiyOpen} closeFunction = {setModify}>
-          <h1 className='title-modal'>Ajout de Client</h1>
+          <h1 className='title-modal'>Modification de Client</h1>
           <div className="modal-input">
             <label for="name">Nom</label>
             <input type="text" defaultValue={modifyData.name} id="name_m"></input>
@@ -260,7 +278,7 @@ function Client(props) {
           </div>
         </Modal>
       <Modal open={open} closeFunction = {setOpen}>
-        <h1 className='title-modal'>Modification de Client</h1>
+        <h1 className='title-modal'>Ajout de Client</h1>
         <div className="modal-input">
           <label for="name">Nom</label>
           <input type="text" id="name"></input>

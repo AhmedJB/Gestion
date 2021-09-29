@@ -12,7 +12,7 @@ from br_handler import Generator
 import random
 import datetime as d
 from datetime import datetime, date 
-from dateutil  import relativedelta
+from dateutil.relativedelta  import relativedelta
 
 # Create your views here.
 
@@ -334,7 +334,7 @@ class OrderV(APIView):
         order.save()
         temp = []
         for prod in data['products']:
-            od = OrderDetails.objects.create(order=order, product_name = prod['name'], quantity = prod['quantity'],prix =prod['price_vente'])
+            od = OrderDetails.objects.create(order=order, product_name = prod['name'], quantity = prod['quantity'],prix =prod['price_vente'],prix_achat = prod['price_achat'])
             od.save()
             p = Product.objects.filter(id=prod['id'])[0]
             p.quantity -= prod['quantity']
@@ -457,7 +457,7 @@ def add_day_date(dt,interval):
     return convertdatetime(dt+ relativedelta(days=interval)) 
 
 def sub_day_date(dt,interval):
-    return convertdatetime(dt+ relativedelta(days=interval)) 
+    return convertdatetime(dt - relativedelta(days=interval)) 
 
 def add_month_date(dt,interval):
     return convertdatetime(dt+ relativedelta(months=interval)) 
@@ -466,10 +466,173 @@ def sub_month_date(dt,interval):
     return convertdatetime(dt- relativedelta(months=interval)) 
 
 
+def startyear(n):
+    return datetime.strptime('{0}-1-1'.format(str(n.year)),"%Y-%d-%m")
+
+
+
+
+class GetClientData(APIView):
+
+
+    def get(self,request,id,format=None):
+        p = Client.objects.filter(id=id)
+        if (len(p) > 0):
+            resp = {
+                "dates" : [],
+                "q" : []
+            }
+            p = p[0]
+            now = datetime.now()
+            start = sub_month_date(now,1)
+            ps  = p.order_set.filter(date__gte=start,date__lte = now)
+            for order in ps:
+                resp['dates'].append(order.date)
+                resp['q'].append(order.total)
+            
+            return Response(resp,status.HTTP_200_OK)
+        else:
+            return Response(False,status.HTTP_400_BAD_REQUEST)
+
+
+class GetProviderData(APIView):
+
+    def get(self,request,id,format=None):
+        p = Provider.objects.filter(id=id)
+        if (len(p) > 0):
+            resp = {
+                "dates" : [],
+                "q" : []
+            }
+            p = p[0]
+            now = datetime.now()
+            start = sub_month_date(now,1)
+            ps  = p.product_set.filter(date__gte=start,date__lte = now)
+            for product in ps:
+                resp['dates'].append(product.date)
+                resp['q'].append(product.quantity)
+            
+            return Response(resp,status.HTTP_200_OK)
+        else:
+            return Response(False,status.HTTP_400_BAD_REQUEST)
+
+
+class GetTop(APIView):
+
+    def get(self,request,format=None):
+        resp ={
+            'providers_ranks': {
+                'providers':[],
+                'quantity' :[]
+            },
+            'clients_ranks':{
+                'clients':[],
+                'total':[]
+            }
+        }
+        provider_rank = []
+        ps = Provider.objects.all()
+        for p in ps:
+            q = 0
+            ps = p.product_set.all()
+            for product in ps:
+                q += product.quantity
+            provider_rank.append({'name':p.name,'q': q})
+        newlist = sorted(provider_rank, key=lambda k: k['q'])[::-1]
+        resp['providers_ranks']['providers'] = [x['name'] for x in newlist][:5]
+        if (any([x['q'] for x in newlist][:5])):
+            resp['providers_ranks']['quantity'] = [x['q'] for x in newlist][:5]
+        
+            
+
+        client_rank = []
+        clients = Client.objects.all()
+        for client in clients:
+            tot = 0
+            orders = client.order_set.all()
+            for order in orders:
+                tot += order.total
+            client_rank.append({'name':client.name,'total':tot})
+        newlist = sorted(client_rank, key=lambda k: k['total'])[::-1]
+        resp['clients_ranks']['clients'] = [x['name'] for x in newlist][:5]
+        if (any([x['total'] for x in newlist][:5])):
+            resp['clients_ranks']['total'] = [x['total'] for x in newlist][:5]
+
+        return Response(resp,status.HTTP_200_OK)
+
+
+
 class GetStable(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [permissions.IsAuthenticated]
 
     def get(self,request,format=None):
         now = datetime.now()
+        start_stable = sub_day_date(now,7)
+        resp = {
+            'ventes':{
+                'quantity':0,
+                'total' : 0
+            },
+            'achat':{
+                'quantity':0,
+                'total' : 0
+            },
+            'stock':{
+                'quantity':0,
+                'total' : 0
+            },
+            'bar':{
+                'profit' : [],
+                'ventes' : []
+            }
+        }
+        orders = Order.objects.filter(date__gte=start_stable,date__lte = now)
+        temp_tot = 0
+        temp_q = 0
+        for o in orders:
+            temp_tot += o.total 
+            for od in o.orderdetails_set.all():
+                temp_q += od.quantity
+        resp['ventes']['total'] = temp_tot
+        resp['ventes']['quantity'] = temp_q
+
+        temp_tot = 0
+        temp_q = 0
+        ps = Product.objects.filter(date__gte=start_stable,date__lte = now)
+
+        for p in ps:
+            temp_tot += (p.price_achat * p.quantity)
+            temp_q += p.quantity
+
+        resp['achat']['total'] = temp_tot
+        resp['achat']['quantity'] = temp_q
+        temp_tot = 0
+        temp_q = 0
+        allps = Product.objects.all()
+        for p in allps:
+            temp_tot += (p.price_achat * p.quantity)
+            temp_q += p.quantity
+        resp['stock']['total'] = temp_tot
+        resp['stock']['quantity'] = temp_q
+        data = {}
+        start = startyear(now)
+        for _ in range(1,13):
+            end_date = add_month_date(start,1)
+            #print(str(s) + ' ==> ' + str(end_date))
+            orders = Order.objects.filter(date__gte=start,date__lte = end_date)
+            v = 0
+            profit = 0
+            for order in orders:
+                for od in order.orderdetails_set.all():
+                    v += od.quantity
+                    profit += ( (od.quantity * od.prix) - (od.quantity * od.prix_achat))
+            resp['bar']['profit'].append(profit)
+            resp['bar']['ventes'].append(v)
+
+            start = end_date
+
+        return Response(resp,status.HTTP_200_OK)
+
+
 
 

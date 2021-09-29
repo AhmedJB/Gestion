@@ -183,15 +183,23 @@ function Stock(props) {
   function handleOption(vs) {
     let body = { ...Body };
     let v = vs[0];
-    if (v.value == "eau") {
-      setView(true);
-      body.product.ptype = v.value;
-    } else {
+    if ( v){
+      if (v.value == "eau") {
+        setView(true);
+        body.product.ptype = v.value;
+      } else {
+        setView(false);
+        body.product.ptype = v.value;
+        body.options.metal = "";
+        body.options.type = "";
+      }
+    }else{
       setView(false);
-      body.product.ptype = v.value;
+      body.product.ptype = 0;
       body.options.metal = "";
       body.options.type = "";
     }
+    
     setBody(body);
   }
 
@@ -447,6 +455,7 @@ function Stock(props) {
         autoDismiss: true,
       });
       updateData();
+      setConfirm(!ConfirmOpen);
     }
   }
 
@@ -538,6 +547,7 @@ function Stock(props) {
 
   const DataTable = (
     <Fragment>
+      <div id="table-wrapper">
       <table id="status-table">
         <tbody>
           <tr>
@@ -617,6 +627,7 @@ function Stock(props) {
           })}
         </tbody>
       </table>
+      </div>
     </Fragment>
   );
 

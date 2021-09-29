@@ -617,7 +617,7 @@ const template = (
     </Preview>
     </div> : ''}
     
-		
+		<div id="table-wrapper">
 		<table id="status-table">
   <tbody>
 	<tr>
@@ -650,6 +650,7 @@ const template = (
 	
   </tbody>
 </table>
+</div>
 	</Fragment>);
 
 const html = (

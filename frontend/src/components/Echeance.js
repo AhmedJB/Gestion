@@ -104,6 +104,7 @@ function Echeance(props) {
         autoDismiss: true,
       });
       updateEch();
+      setConfirm(!ConfirmOpen);
     }
   }
 
@@ -318,6 +319,7 @@ function Echeance(props) {
 
   const DataTable = (
     <Fragment>
+      <div id="table-wrapper">
       <table id="status-table">
         <tbody>
           <tr>
@@ -361,6 +363,7 @@ function Echeance(props) {
           })}
         </tbody>
       </table>
+      </div>
     </Fragment>
   );
 

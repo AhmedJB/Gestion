@@ -48,6 +48,7 @@ class Product(models.Model):
     price_vente = models.FloatField(default=0)
     price_achat = models.FloatField(default=0)
     quantity = models.IntegerField(default=0)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -86,6 +87,7 @@ class OrderDetails(models.Model):
     product_name = models.CharField(max_length=255)
     quantity = models.IntegerField(default=0)
     prix = models.FloatField(default=0)
+    prix_achat = models.FloatField(default=0)
 
 
 

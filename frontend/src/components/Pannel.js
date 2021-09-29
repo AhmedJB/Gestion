@@ -31,21 +31,37 @@ function Pannel(props) {
   ]
   const [Clients, setClients] = useState([]);
   const [Providers, setProviders] = useState([]);
+  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [selectedClient,setSelectedClient] = useState(null);
+  const [stable,setStable] = useState({
+    "ventes": {
+      "quantity": 0,
+      "total": 0
+    },
+    "achat": {
+        "quantity": 0,
+        "total": 0
+    },
+    "stock": {
+        "quantity": 0,
+        "total": 0
+    }
+  });
   const [options, setOptions] = useState({
     chart: {
       id: "basic-bar",
     },
     colors: colors,
     xaxis: {
-      categories: [
-        ["Lundi"],
-        ["mardi"],
-        ["mercredi"],
-        "jeudi",
-        ["vendredi"],
-        ["samedi"],
-        ["dimanche"],
-      ],
+      categories: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+      labels: {
+        style: {
+          colors: "#fff",
+          fontSize: "12px",
+        },
+      },
+    },
+    yaxis:{
       labels: {
         style: {
           colors: "#fff",
@@ -61,18 +77,14 @@ function Pannel(props) {
     },
     stroke: {
       curve: "smooth",
+      colors :["#5900ff"]
     },
     xaxis: {
       type: "datetime",
       categories: [
-        "2018-09-19T00:00:00.000Z",
-        "2018-09-19T01:30:00.000Z",
-        "2018-09-19T02:30:00.000Z",
-        "2018-09-19T03:30:00.000Z",
-        "2018-09-19T04:30:00.000Z",
-        "2018-09-19T05:30:00.000Z",
-        "2018-09-19T06:30:00.000Z",
-      ],
+        "2021-09-28T21:32:46.038306Z",
+        "2021-09-28T23:49:15.267100Z"
+    ],
       labels: {
         style: {
           colors: "#fff",
@@ -80,21 +92,36 @@ function Pannel(props) {
         },
       },
     },
+    yaxis:{
+      labels: {
+        style: {
+          colors: "#fff",
+          fontSize: "12px",
+        },
+      },
+    }
+    ,
     tooltip: {
       x: {
         format: "dd/MM/yy HH:mm",
       },
     },
+    markers: {
+      colors : ["#5900ff"]
+    }
   });
 
   const [ProviderLineSeries, setProviderLineSeries] = useState([
     {
-      name: "series1",
-      data: [31, 40, 28, 51, 42, 109, 100],
+      name: "Quantite",
+      data: [
+        181,
+        500
+    ],
     },
   ]);
   const [ProviderPieOptions, setProviderPieOptions] = useState({
-    labels: ["Apple", "Mango", "Orange", "Watermelon"],
+    labels: [],
     colors: pieColors,
     dataLabels: {
       enabled: false,
@@ -110,7 +137,7 @@ function Pannel(props) {
       },
     },
   });
-  const [ProviderPieSeries, setProviderPieSeries] = useState([44, 55, 41, 17, 15]);
+  const [ProviderPieSeries, setProviderPieSeries] = useState([]);
 
   const [clientLineOptions, setClientLineOption] = useState({
     dataLabels: {
@@ -118,18 +145,22 @@ function Pannel(props) {
     },
     stroke: {
       curve: "smooth",
+      colors :["#5900ff"]
     },
     xaxis: {
       type: "datetime",
       categories: [
-        "2018-09-19T00:00:00.000Z",
-        "2018-09-19T01:30:00.000Z",
-        "2018-09-19T02:30:00.000Z",
-        "2018-09-19T03:30:00.000Z",
-        "2018-09-19T04:30:00.000Z",
-        "2018-09-19T05:30:00.000Z",
-        "2018-09-19T06:30:00.000Z",
-      ],
+        "2021-09-28T21:32:46.038306Z",
+        "2021-09-28T23:49:15.267100Z"
+    ],
+      labels: {
+        style: {
+          colors: "#fff",
+          fontSize: "12px",
+        },
+      },
+    },
+    yaxis:{
       labels: {
         style: {
           colors: "#fff",
@@ -142,16 +173,22 @@ function Pannel(props) {
         format: "dd/MM/yy HH:mm",
       },
     },
+    markers: {
+      colors : ["#5900ff"]
+    }
   });
 
   const [clientLineSeries, setClientLineSeries] = useState([
     {
-      name: "series1",
-      data: [31, 40, 28, 51, 42, 109, 100],
+      name: "Total",
+      data: [
+        181,
+        500
+    ],
     },
   ]);
   const [clientPieOptions, setClientPieOptions] = useState({
-    labels: ["Apple", "Mango", "Orange", "Watermelon"],
+    labels: [],
     colors: pieColors,
     dataLabels: {
       enabled: false,
@@ -167,7 +204,7 @@ function Pannel(props) {
       },
     },
   });
-  const [clientPieSeries, setClientPieSeries] = useState([44, 55, 41, 17, 15]);
+  const [clientPieSeries, setClientPieSeries] = useState([]);
 
   const [Articleseries, setArticleSeries] = useState([
     {
@@ -178,7 +215,7 @@ function Pannel(props) {
 
   const [Profitseries, setProfitSeries] = useState([
     {
-      name: "Profit",
+      name: "Profit (DH)",
       data: [21, 22, 10, 28, 16, 21, 13],
     },
   ]);
@@ -193,6 +230,8 @@ function Pannel(props) {
         obj.email = resp.email;
         setUser(obj);
         await updateUsers();
+        await updateStableData();
+        await updatePie();
         return obj;
       } else {
         logout(setUser, User);
@@ -214,6 +253,37 @@ function Pannel(props) {
   }, []);
 
   // functions for data
+
+  async function updatePie(){
+    let resp = await req("getranks");
+    if (resp){
+      let temppie1 = {...clientPieOptions}
+      temppie1.labels = resp['clients_ranks'].clients;
+      let temppie2 = {...ProviderPieOptions}
+      temppie2.labels = resp['providers_ranks'].providers
+      setProviderPieOptions(temppie2);
+      setProviderPieSeries(resp['providers_ranks'].quantity);
+      setClientPieOptions(temppie1)
+      setClientPieSeries(resp['clients_ranks'].total)
+
+    }
+  }
+
+  async function updateStableData(){
+    let resp = await req("getstable");
+    if (resp){
+      let temparticles = [...Articleseries];
+      temparticles[0].data = resp.bar.ventes;
+      let tempprofits = [...Profitseries];
+      tempprofits[0].data = resp.bar.profit;
+      setProfitSeries(tempprofits)
+      setArticleSeries(temparticles)
+      console.log(tempprofits);
+      setStable(resp);
+    }
+  }
+
+
   async function updateUsers(){
     let supResp = await  req('client');
     let supResp2 = await req('provider')
@@ -225,7 +295,67 @@ function Pannel(props) {
     setData(obj2);
   }
 
-  async function loadSupplierLine(){};
+  async function loadSupplierLine(vs){
+    let series = [
+      181,
+      500
+  ];
+    let cats = [
+      "2021-09-28T21:32:46.038306Z",
+      "2021-09-28T23:49:15.267100Z"
+  ];
+    if (vs.length != 0){
+      
+      let v = vs[0];
+      setSelectedProvider(v.id);
+      let resp = await req('getproviderdata/'+v.id);
+      if (resp){
+        series = resp.q;
+        cats = resp.dates;
+      }
+    }else{
+      setSelectedProvider(null);
+    }
+    console.log(series);
+    let temp = {...ProviderLineOptions};
+    temp.xaxis.categories = cats;
+    let temp2 = [...ProviderLineSeries]
+    setProviderLineOption(temp);
+    temp2[0].data = series
+    setProviderLineSeries(temp2);
+    
+  };
+
+  async function loadClientLine(vs){
+    let series = [
+      181,
+      500
+  ];
+    let cats = [
+      "2021-09-28T21:32:46.038306Z",
+      "2021-09-28T23:49:15.267100Z"
+  ];
+    if (vs.length != 0){
+      
+      let v = vs[0];
+      setSelectedClient(v.id);
+      let resp = await req('getclientdata/'+v.id);
+      if (resp){
+        series = resp.q;
+        cats = resp.dates;
+      }
+    }else{
+      setSelectedClient(null);
+    }
+    console.log(series);
+    let temp = {...clientLineOptions};
+    temp.xaxis.categories = cats;
+    let temp2 = [...clientLineSeries]
+    setClientLineOption(temp);
+    temp2[0].data = series
+    setClientLineSeries(temp2);
+    
+  };
 
 
 
@@ -252,12 +382,12 @@ function Pannel(props) {
         <div className="card-value card-row">
           <div className="card-column">
             <p>Articles Vendu</p>
-            <p className="circle">35</p>
+            <p className="circle">{stable.ventes.quantity}</p>
           </div>
 
           <div className="card-column">
             <p>Total</p>
-            <p className="box">1300DH</p>
+            <p className="box">{stable.ventes.total +"DH"}</p>
           </div>
         </div>
       </Card>
@@ -266,12 +396,12 @@ function Pannel(props) {
         <div className="card-value card-row">
           <div className="card-column">
             <p>Articles Achetes</p>
-            <p className="circle">35</p>
+            <p className="circle">{stable.achat.quantity}</p>
           </div>
 
           <div className="card-column">
             <p>Total</p>
-            <p className="box">1300DH</p>
+            <p className="box">{stable.achat.total +"DH"}</p>
           </div>
         </div>
       </Card>
@@ -280,12 +410,12 @@ function Pannel(props) {
         <div className="card-value card-row">
           <div className="card-column">
             <p>Articles Disponible</p>
-            <p className="circle">35</p>
+            <p className="circle">{stable.stock.quantity}</p>
           </div>
 
           <div className="card-column">
             <p>Total</p>
-            <p className="box">1000DH</p>
+            <p className="box">{stable.stock.total +"DH"}</p>
           </div>
         </div>
       </Card>
@@ -299,7 +429,7 @@ function Pannel(props) {
         <h3 className="card-title text-center inline">Fournisseur</h3>
         <div className="inline">
         <CustomSelect options={Data.Suppliers} changeFunc={loadSupplierLine}
-label="name" multi={true} fvalue="id" placeholder="Choisir un Fournisseur" />
+label="name" multi={false} values={Data.Suppliers.filter(e => e.id == selectedProvider)} fvalue="id" placeholder="Choisir un Fournisseur" />
         </div>
         
         </div>
@@ -313,13 +443,14 @@ label="name" multi={true} fvalue="id" placeholder="Choisir un Fournisseur" />
               height="400"
             />
           </div>
-          <Chart
+          {ProviderPieSeries.length != 0 ? <Chart
             options={ProviderPieOptions}
             series={ProviderPieSeries}
             type="donut"
             height="600"
             width="300"
-          />
+          /> : ""}
+          
         </div>
       </Card>
     </div>
@@ -331,13 +462,13 @@ label="name" multi={true} fvalue="id" placeholder="Choisir un Fournisseur" />
       <div className='title-select-row'>
         <h3 className="card-title text-center inline">Clients</h3>
         <div className="inline">
-        <CustomSelect options={Data.Clients} changeFunc={loadSupplierLine}
-label="name" multi={true} fvalue="id" placeholder="Choisir un Client" />
+        <CustomSelect options={Data.Clients} changeFunc={loadClientLine}
+      label="name" multi={false} values={Data.Clients.filter(e => e.id == selectedClient)} fvalue="id" placeholder="Choisir un Client" />
         </div>
         
         </div>
         <div className="inner-row">
-          <div className="grow">
+        <div className="grow">
             <Chart
               options={clientLineOptions}
               series={clientLineSeries}
@@ -345,14 +476,16 @@ label="name" multi={true} fvalue="id" placeholder="Choisir un Client" />
               height="400"
             />
           </div>
-          <Chart
+          { clientPieSeries.length != 0 ? <Chart
             options={clientPieOptions}
             series={clientPieSeries}
             type="donut"
             height="600"
             width="300"
-          />
+          /> : ""  }
+          
         </div>
+        
       </Card>
     </div>
   );
