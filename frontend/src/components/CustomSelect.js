@@ -49,6 +49,7 @@ function CustomSelect(props) {
         console.log(state)
         console.log(methods)
         console.log(props.options) */
+        console.log(props);
         let opts = props.options;
         let res = []
         for (let i = 0 ; i < opts.length ; i++ ){
@@ -56,7 +57,7 @@ function CustomSelect(props) {
             if (rate > 0.2){
                 console.log(opts[i].name)
             } */
-            if (opts[i].name.toLowerCase().startsWith(state.search.toLowerCase())){
+            if (opts[i][props.searchTerm].toLowerCase().startsWith(state.search.toLowerCase())){
                 //console.log(res);
                 //console.log(opts[i])
                 res.push(opts[i])
@@ -79,6 +80,7 @@ function CustomSelect(props) {
     searchable= {true}
     placeholder={props.placeholder}
     searchBy={props.searchBy}
+    searchTerm={props.searchTerm ? props.searchTerm : "name"}
     color = "#b187ff"
     className ={props.clas ? props.clas + " CustomDropdown" : "CustomDropdown"} 
     clearable = {props.clearable == false ? props.clearable : true}

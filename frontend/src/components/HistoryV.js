@@ -346,7 +346,7 @@ function handlePaid(e){
 function handleret(e){
   let t = e.target;
   let c = {...DeletedOrder}
-  c.order = Number(t.value);
+  c.order.ret = Number(t.value);
   setDeleted(c);
 }
 
@@ -388,6 +388,7 @@ function delOrderProduct(id){
   deleted.details.push(elem);
   deleted.order.total += (Number(elem.quantity) * Number(elem.prix))
   deleted.order.ret += (Number(elem.quantity) * Number(elem.prix))
+  console.log(deleted.order);
   setDeleted(deleted);
   setDetails(Selected_copy);
 
@@ -436,6 +437,33 @@ async function handleClose(arg){
 
 };
 
+
+function getSubOrder(l){
+  let res = [];
+  for (let i= 0 ; i < l.length ; i++){
+    res.push(l[i].order);
+  }
+  console.log(res);
+  return res;
+}
+
+async function filterID(v){
+  var d = [];
+  if (v != ''){
+    let temp;
+    for (let i=0 ; i<  v.length ; i++){
+        temp = Orders.filter(e => e.order.id == v[i].id);
+        for (let i=0 ; i<  temp.length ; i++){
+          //console.log(temp);
+          d.push(temp[i]);
+          }
+    }
+    console.log(d);
+    setOrders(d);
+  }else{
+   await updateOrders();
+  }
+}
 
 
 const bon = (
@@ -993,6 +1021,9 @@ const html = (
       </ThemeProvider>
       <CustomSelect options={Data.Clients} changeFunc={filter}
 label="name" multi={false} fvalue="id" placeholder="Choisir un Client" />
+     <CustomSelect options={getSubOrder(Orders)} changeFunc={filterID}
+label="o_id" multi={false} searchTerm="o_id" fvalue="id" placeholder="Choisir l'ID" />
+      
       <ThemeProvider theme={materialTheme}>
 <DatePicker
         variant="inline"
