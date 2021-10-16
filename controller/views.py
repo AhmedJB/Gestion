@@ -225,7 +225,7 @@ class AddProduct(APIView):
     
     def get(self,request,format=None):
         resps = []
-        products = Product.objects.all().order_by('-date')
+        products = Product.objects.all().order_by('-quantity')
         for product  in products:
             supplier = product.provider
             options = product.options_set.all()[0]
@@ -259,7 +259,8 @@ class ModifyProduct(APIView):
         p = Product.objects.filter(p_id = id)[0]
         print(data)
         supplier = Provider.objects.filter(id=data['fournisseur']['id'])[0]
-        credit = (p.paid - float(data['product']['paid']))
+        q = int(data['product']['quantity'])
+        credit = ((q - p.quantity) * float(data['product']['price_achat'])) - (float(data['product']['paid']) -  p.paid)
         if (supplier.credit + credit >= 0):
             supplier.credit   += credit
         else:
@@ -335,8 +336,11 @@ class OrderV(APIView):
         temp = []
         for prod in data['products']:
             od = OrderDetails.objects.create(order=order, product_name = prod['name'], quantity = prod['quantity'],prix =prod['price_vente'],prix_achat = prod['price_achat'])
-            od.save()
+            
             p = Product.objects.filter(id=prod['id'])[0]
+            od.provider_id = p.provider.id 
+            od.product_id = p.id 
+            od.save()
             p.quantity -= prod['quantity']
             p.save()
             temp.append(OrderDetailsSerializer(od).data)
@@ -345,6 +349,33 @@ class OrderV(APIView):
         print(data)
         print(resp)
         return Response(resp,status.HTTP_200_OK)
+
+class DelOrder(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,idd,format=None):
+        try:
+            order = Order.objects.filter(id=idd)[0]
+            c= order.client
+            credit = order.total  - order.paid
+            c.creadit -=  credit 
+            c.save()
+            order.delete()
+        except:
+            return  Response({'response':'failed'},status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class DelOrderProd(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,orderid,format=None):
+        data = request.data
+        print(data)
+        return Response({'result':'failed'},status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
         
 class OrderFilter(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -404,7 +435,7 @@ class ModEcheance(APIView):
         e = Echeance.objects.filter(id=id)[0]
         e.total = float(data['total'])
         e.paid = float(data['paid'])
-        e.reste = float(data['total']) - float(data['paid'])
+        e.reste = float(data['total']) - float(data['paid'].split(' ')[0])
         e.dateEcheance = data['dateEcheance']
         e.save()
         return Response(EcheanceSerializer(e).data,status.HTTP_200_OK)
@@ -425,16 +456,19 @@ class ModOrder(APIView):
     def post(self,request,format="none"):
         data = request.data
         print(data)
-        o = Order.objects.filter(o_id = data['o_id'])[0]
+        resp = {
+            'error':False
+        }
+        o = Order.objects.filter(o_id = data['details']['o_id'])[0]
         total = 0
-        for d in data['details']:
+        for d in data['details']['details']:
             total += (d['quantity'] * d['prix'])
             od = o.orderdetails_set.filter(id=d['id'])[0]
             od.quantity = d['quantity']
             od.prix = d['prix']
             od.save()
         print(total)
-        c = (total - data['paid']) - (o.total - o.paid)
+        c = (total - data['details']['paid']  + data['ret']) - (o.total - o.paid)
         print(c)
         client = o.client
         if (client.credit + c == 0):
@@ -443,10 +477,45 @@ class ModOrder(APIView):
             client.credit += c
         client.save()
         o.total = total
-        o.paid = data['paid']
-        o.mode = data['mode']
+        o.paid = data['details']['paid']  - data['ret']
+        o.mode = data['details']['mode']
+        for dl in data['deleted']:
+            od = OrderDetails.objects.filter(id=dl['id'])[0]
+            if (od.provider_id == -1 and od.product_id == -1):
+                resp = {
+                    'error':True,
+                    'msg' : "Order Ancien"
+                }
+            else:
+                p = Product.objects.filter(id=od.product_id)
+                if len(p) == 0:
+                    f  =  Provider.objects.filter(id = od.provider_id)
+                    if len(f) == 0:
+                        resp = {
+                    'error':True,
+                    'msg' : "Fournisseur Introuvable"
+                }
+                    else:
+                        p  = Product.objects.filter(provider = f[0],name=od.product_name)
+                        if len(p) == 0:
+                            resp = {
+                    'error':True,
+                    'msg' : "Produit Introuvable"
+                }
+                        else:
+                            p = p[0]
+                else:
+                    p  = p[0]
+                if p:
+                    p.quantity += dl['quantity']
+                    p.save()
+                od.delete()
+                
+
         o.save()
-        return Response({} , status.HTTP_200_OK)
+        if len(data['details']['details']) == 0:
+            o.delete()
+        return Response(resp , status.HTTP_200_OK)
 
 
 def convertdatetime(n):

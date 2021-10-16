@@ -85,6 +85,8 @@ class Order(models.Model):
 class OrderDetails(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product_name = models.CharField(max_length=255)
+    provider_id =  models.IntegerField(default=-1)
+    product_id = models.IntegerField(default=-1)
     quantity = models.IntegerField(default=0)
     prix = models.FloatField(default=0)
     prix_achat = models.FloatField(default=0)

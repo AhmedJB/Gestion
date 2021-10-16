@@ -39,6 +39,12 @@ function HistoryV(props){
     order: {},
     details : []
   });
+
+  const [DeletedOrder,setDeleted] = useState({
+    client:{},
+    order: {},
+    details : []
+  });
   const [PaymentOptions, setPaymentOptins] = useState([
     {
       name: 'cash',
@@ -122,6 +128,7 @@ const materialTheme = createTheme({
         obj.username = resp.username;
         obj.email = resp.email;
         setUser(obj);
+        await updateClients();
         await updateOrders();
         return obj;
       } else {
@@ -143,6 +150,14 @@ const materialTheme = createTheme({
     });
   }, []);
 
+  async function  updateClients(){
+    let supResp = await  req('client');
+    let obj2 = {...Data};
+    obj2.Clients = supResp;
+    setData(obj2);
+    //setClients(supResp);
+    return true;
+  }
 
 
 
@@ -191,6 +206,26 @@ const materialTheme = createTheme({
     if (resp){
       setOrders(resp);
     }
+  }
+
+  async function  filter(v){
+    var d = [];
+    if (v != ''){
+      let temp;
+      for (let i=0 ; i<  v.length ; i++){
+          temp = Orders.filter(e => e.client.id == v[i].id);
+          for (let i=0 ; i<  temp.length ; i++){
+            //console.log(temp);
+            d.push(temp[i]);
+            }
+      }
+      console.log(d);
+      setOrders(d);
+    }else{
+     await updateOrders();
+    }
+    
+
   }
 
 
@@ -252,7 +287,18 @@ function setOrderDetails(id){
     paid : order.order.paid,
     details : order.details
   }
+  let d = {
+    client : order.client,
+    order : {
+      o_id :  order.order.o_id,
+      total : 0,
+      ret : 0,
+      date : order.order.date
+    },
+    details : [],
+  }
   setDetails(b)
+  setDeleted(d);
   setOpen(!Open);
 }
 
@@ -297,6 +343,13 @@ function handlePaid(e){
   setDetails(c);
 }
 
+function handleret(e){
+  let t = e.target;
+  let c = {...DeletedOrder}
+  c.order = Number(t.value);
+  setDeleted(c);
+}
+
 function formatPrice(e) {
   let t = e.target
   let val = ''
@@ -326,13 +379,43 @@ function formatField(e) {
   t.value = val
 }
 
+function delOrderProduct(id){
+  let deleted =  {...DeletedOrder};
+  let Selected_copy = {...Details};
+  let index = getDet(id);
+  let elem = Selected_copy.details.splice(index,1)[0];
+  console.log(elem);
+  deleted.details.push(elem);
+  deleted.order.total += (Number(elem.quantity) * Number(elem.prix))
+  deleted.order.ret += (Number(elem.quantity) * Number(elem.prix))
+  setDeleted(deleted);
+  setDetails(Selected_copy);
+
+}
+
 async function updateOrder(){
-  let resp = await postReq('modorder',Details);
+  resp = {
+    details  : Details,
+    deleted : DeletedOrder.details,
+    ret :  DeletedOrder.order.ret
+  }
+  
+  let resp = await postReq('modorder',resp);
   if (resp){
+    if (DeletedOrder.details.length > 0){
+      print(DeletedOrder.order.o_id,'jsx-template-3')
+    }
+    
     addToast("Succès", {
       appearance: "success",
       autoDismiss: true,
     });
+    if (resp.error){
+      addToast(resp.msg, {
+        appearance: "warning",
+        autoDismiss: true,
+      });
+    }
     updateOrders();
   }else{
     addToast("Erreur", {
@@ -341,6 +424,17 @@ async function updateOrder(){
     });
   }
 }
+
+async function handleClose(arg){
+  setDeleted({
+    client:{},
+    order: {},
+    details : []
+  });
+  await updateOrders();
+  setOpen(arg);
+
+};
 
 
 
@@ -459,7 +553,150 @@ const bon = (
 
 )
 
+const fac_avoir = (
+  <div id="invoice" className="page" size="A4">
+  <div className='top-padding'>
+    <section className="top-content bb d-flex justify-content-between">
+      <div className="logo-facture">
+        <img src="/static/pics/LOGO-1.png" alt className="img-fluid" />
+      </div>
+      <img id="watermark" src="/static/pics/LOGOa.png" />
+      {/* <div className="top-left">
+        <div className="graphic-path">
+          <p>Facture</p>
+        </div>
+      </div> */}
+    </section>
+    <section className="store-user mt-5">
+      <div className="col-12 center-elem">
+        <p>Facture d'avoir N<sup>°</sup>: <span>#{DeletedOrder.order.o_id}</span></p>
+      </div>
+      <div className="col-10">
+        <div className="row-custom pb-3">
+          <div>
+            <p>Client,</p>
+            <h2 id="client">{DeletedOrder.client.name}</h2>
+          </div>
+          <div>
+            <p>Le,</p>
+            <h2>{ (new Date(DeletedOrder.order.date)).getUTCDate()+'-'+((new Date(DeletedOrder.order.date)).getUTCMonth() + 1)+'-'+(new Date(DeletedOrder.order.date)).getUTCFullYear()}</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section className="product-area mt-4">
+      <table id="fact-table" className="table table-hover">
+        <thead>
+          <tr>
+            <td>Quantite</td>
+            <td>Designation</td>
+            <td>P.U</td>
+            <td>Total</td>
+          </tr>
+        </thead>
+        <tbody>
+          {DeletedOrder.details.map((e) => {
+            return (
+<tr>
+            <td>{e.quantity}</td>
+            <td>
+              <div className="media">
+                <div className="media-body">
+                  <p className="mt-0 title">{e.product_name}</p>
+                </div>
+              </div>
+            </td>
+            <td>{e.prix}DH</td>
+            <td>{e.prix * e.quantity}DH</td>
+          </tr>
+            )
+          })}
+          
+          
+        </tbody><tfoot>
+          <tr>
+            <td />
+            <td />
+            <td>Total HT:</td>
+            <td>{DeletedOrder.order.total}DH</td>
+          </tr>
+          <tr>
+            <td />
+            <td />
+            <td>TVA 20%:</td>
+            <td>{DeletedOrder.order.total * 20 / 100}DH</td>
+          </tr>
+          <tr>
+            <td />
+            <td />
+            <td className="bord">Total TTC:</td>
+            <td className="bord">{DeletedOrder.order.total + (DeletedOrder.order.total * 20 / 100)}DH</td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+    <section className="balance-info">
+      <div className="">
+        <div className="col-8">
+          <p className="m-0 font-weight-bold note"> Note: <span>Reconnaît avoir recu conforme à la livraison ci-dessus</span> </p>
+          <p />
+        </div>
+        {/* <div class="col-4">
+            <table class="table total border-0 table-hover">
+                <tr>
+                    <td>Total HT:</td>
+                    <td>1000DH</td>
+                </tr>
+                <tr>
+                    <td>TVA 20%:</td>
+                    <td>200DH</td>
+                </tr>
+                <tfoot>
+                    <tr>
+                        <td>Total TTC:</td>
+                        <td>1200DH</td>
+                    </tr>
+                </tfoot>
+            </table>
 
+             Signature 
+        </div> */}
+      </div>
+    </section>
+    {/* Cart BG */}
+   {/*  <img src="/static/pics/cart.jpg" className="img-fluid cart-bg" alt /> */}
+    <footer id="footer-facture">
+      <hr />
+      <p className="m-0 text-center colortext">
+        10 Lot Baraka Wiam Bensouda Mag 3 ‐ Fès / GSM: 06 61 08 56 62
+      </p>
+      <br />
+      <span className="email">
+        <span>Email: najate.radiateur@yahoo.fr</span>
+      </span>
+      <br />
+      <div className="social">
+        <span className="pr-2">
+          <span>TP: 13439808</span>
+        </span>
+        <span className="pr-2">
+          <span>IF: 15163065</span>
+        </span>
+        <span className="pr-2">
+          <span>RC: 43697</span>
+        </span>
+        <span className="pr-2">
+          <span>CNSS: 9961659</span>
+        </span>
+        <span className="pr-2">
+          <span>ICE: 000010730000029</span>
+        </span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+);
 
 const template = (
   <div id="invoice" className="page" size="A4">
@@ -616,6 +853,12 @@ const template = (
     {template}
     </Preview>
     </div> : ''}
+
+    {DeletedOrder.order.o_id ? <div id="exportPdf">
+    <Preview id={'jsx-template-3'} >
+    {fac_avoir}
+    </Preview>
+    </div> : ""}
     
 		<div id="table-wrapper">
 		<table id="status-table">
@@ -656,7 +899,7 @@ const template = (
 const html = (
     <Fragment>
 
-      <Modal open={Open} closeFunction = {setOpen}>
+      <Modal open={Open} closeFunction = {handleClose}>
             <h1 className='title-modal m20'>Detail de Commande</h1>
             <div className="modal-input-row">
             <CustomSelect
@@ -676,6 +919,12 @@ const html = (
             <input type="text" defaultValue={Details.paid +' DH'} onChange={handlePaid} onFocus= {clearField}
                         onBlur ={formatPrice}
                         datavalue={Details.paid} id="add_m"></input>
+            </div>
+            <div className="modal-input">
+            <label for='add'>Remboursement</label>
+            <input key={DeletedOrder.order.ret} type="text" defaultValue={DeletedOrder.order.ret +' DH'} onChange={handleret} onFocus= {clearField}
+                        onBlur ={formatPrice}
+                        datavalue={DeletedOrder.order.ret} id="add_m"></input>
             </div>
             <table id="status-table">
             <tbody>
@@ -720,6 +969,7 @@ const html = (
                         defaultValue={e.prix + ' DH'}
                       ></input>
                     </td>
+                    <td onClick={() => {delOrderProduct(e.id)}} className="delete" ><FontAwesomeIcon  icon={faTrashAlt}  className="trash"/></td>
                     
                   </tr>
                 )
@@ -741,6 +991,8 @@ const html = (
         onChange={changeStart}
       />
       </ThemeProvider>
+      <CustomSelect options={Data.Clients} changeFunc={filter}
+label="name" multi={false} fvalue="id" placeholder="Choisir un Client" />
       <ThemeProvider theme={materialTheme}>
 <DatePicker
         variant="inline"

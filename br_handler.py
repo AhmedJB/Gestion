@@ -102,13 +102,14 @@ class Generator:
                 sheet.add_label([idd[0],idd[1]])
         sheet.save('media/br.pdf')
         for idd in ids:
-            os.remove('{0}.png'.format(str(idd[1])))
+            if (idd[-1]  != 0):
+                os.remove('{0}.png'.format(str(idd[1])))
 
 
 
 
 if __name__ == "__main__":
     g = Generator()
-    l = [['radiateur dacia eau v25 mn 3nd si hamid','9655862692768'], ['radiateur dacia eau v25 mn 3nd si hamid','9655862692768']]
+    l = []
     g.genPdf(l)
     #print('generated')

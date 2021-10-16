@@ -50,6 +50,12 @@ function Stock(props) {
     air: "Radiateur Air",
     clime: "Radiateur Clime",
     chauf: "Radiateur Chauffage",
+    bonchon : "Bonchon",
+    maneau : "Maneau",
+    Deurite : "Deurite",
+    antifel :"Antifèlle",
+    fref :"Fréférant",
+    termonstat :"Termonstat"
   };
   const [Products, setProduct] = useState([]);
 
@@ -81,6 +87,35 @@ function Stock(props) {
       name: names["chauf"],
       value: "chauf",
     },
+    {
+      name: names["bonchon"],
+      value: "bonchon",
+    }
+    ,
+    {
+      name: names["maneau"],
+      value: "maneau",
+    }
+    ,
+    {
+      name: names["Deurite"],
+      value: "Deurite",
+    }
+    ,
+    {
+      name: names["antifel"],
+      value: "antifel",
+    }
+    ,
+    {
+      name: names["fref"],
+      value: "fref",
+    }
+    ,
+    {
+      name: names["termonstat"],
+      value: "termonstat",
+    }
   ]);
 
   const [Place, setPlace] = useState([
@@ -339,8 +374,25 @@ function Stock(props) {
   function getarray(key1) {
     let arr = [];
     for (let i = 0; i < Products.length; i++) {
-      arr.push(Products[i][key1]);
+      let temp = Products[i][key1];
+      let found = false;
+      let q = temp.quantity;
+      for (let j  = arr.length-1 ; j >= 0;j--){
+        if (arr[j].name == temp.name  && !found){
+          q +=  arr[j].total_quantity
+          found = true
+        }
+        if (arr[j].name == temp.name){
+          arr[j].total_quantity =  q;
+          arr[j].total_name =  arr[j].name + " ("+q+")";
+        }
+        
+      }
+      temp.total_quantity = q
+      temp.total_name = temp.name+" ("+q+")";
+      arr.push(temp);
     }
+    console.log(arr);
     return arr;
   }
 
@@ -855,7 +907,7 @@ function Stock(props) {
               options={Data.Suppliers}
               changeFunc={filterFournisseur}
               label="name"
-              fvalue="name"
+              fvalue="id"
               searchBy="name"
               placeholder="Choisir un Fournisseur"
             />
@@ -878,8 +930,8 @@ function Stock(props) {
             <CustomSelect
               options={getarray("product")}
               changeFunc={filterProductName}
-              label="name"
-              fvalue="name"
+              label="total_name"
+              fvalue="p_id"
               placeholder="Choisir un produit"
             />
           </div>

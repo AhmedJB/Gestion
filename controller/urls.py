@@ -27,6 +27,7 @@ urlpatterns = [
     path('order',OrderV.as_view()),
     path('filterorder',OrderFilter.as_view()),
     path('modorder',ModOrder.as_view()),
+    path('delorder/<int:id>',DelOrderProd.as_view()),
 
     # download barcode labels
     path('downloadbr',postDownload.as_view()),
@@ -48,26 +49,3 @@ urlpatterns = [
     path('getclientdata/<int:id>',GetClientData.as_view()),
 
 ]
-
-"""
-3000 
-
-2000
-#### 1000
-
-4000
-
-2500
-
-#### 1500
-
-
-
-
-
-
-
-
-
-
-"""

@@ -57,8 +57,8 @@ function CustomSelect(props) {
                 console.log(opts[i].name)
             } */
             if (opts[i].name.toLowerCase().startsWith(state.search.toLowerCase())){
-                console.log(res);
-                console.log(opts[i])
+                //console.log(res);
+                //console.log(opts[i])
                 res.push(opts[i])
             }
 
