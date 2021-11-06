@@ -14,6 +14,7 @@ import { Preview, print } from 'react-html2pdf';
 import Modal from "./Modal";
 import "../../static/frontend/invoice.css"
 import CustomSelect from "./CustomSelect";
+import { makePDF } from 'multi-page-html2pdf';
 
 
 
@@ -34,11 +35,11 @@ function HistoryV(props){
   );
   const [Open,setOpen] = useState(false);
   const [Orders, setOrders] = useState([]);
-  const [SelectedOrder,setSelectedOrder] = useState({
+  const [SelectedOrder,setSelectedOrder] = useState([{
     client:{},
     order: {},
     details : []
-  });
+  }]);
 
   const [DeletedOrder,setDeleted] = useState({
     client:{},
@@ -255,27 +256,65 @@ function getOrder(id){
 
 
 function downloadFact(){
-  
+  let options = {
+    margin: 1,
+    filName: SelectedOrder[0].order.o_id
+  }
+  //print(SelectedOrder.order.o_id, 'jsx-template-2')
+  makePDF('jsx-template',options);
 
-  print(SelectedOrder.order.o_id, 'jsx-template')
+  //print(SelectedOrder.order.o_id, 'jsx-template')
 }
 
 function downloadBon(){
-  print(SelectedOrder.order.o_id, 'jsx-template-2')
+    let options = {
+    margin: 1,
+    filName: SelectedOrder[0].order.o_id
+  }
+  //print(SelectedOrder.order.o_id, 'jsx-template-2')
+  makePDF('jsx-template-2',options);
 }
 
 function updateData(id){
   let order = getOrder(id);
+  let temp = [];
+  let res = [];
+  let total =  0;
   console.log(order);
-  setSelectedOrder(order);
+  for(let i=0;i < order.details.length ; i++){
+    if (i%10 == 0 && i != 0){
+      res.push({
+        client : order.client,
+        details : temp,
+        order : {date : order.order.date, id  : order.order.id,o_id : order.order.o_id,total}
+      })
+      temp =  [];
+      total = 0;
+    }
+    temp.push(order.details[i]);
+    total += (order.details[i].quantity  * order.details[i].prix)
+
+    
+  }
+  if (temp.length> 0){
+    res.push({
+      client : order.client,
+      details : temp,
+      order : {date : order.order.date, id  : order.order.id,o_id : order.order.o_id,total}
+    })
+    temp =  [];
+    total = 0;
+  }
+  console.log(res);
+  setSelectedOrder(res);
 }
 
 function clearData(){
-  setSelectedOrder({
+  setSelectedOrder([{
     client:{},
     order: {},
     details : []
-  });
+  }]); 
 }
 
 function setOrderDetails(id){
@@ -466,8 +505,9 @@ async function filterID(v){
 }
 
 
-const bon = (
-  <div id="invoice" className="page" size="A4">
+const bon = SelectedOrder.map(order => {
+    return (
+      <div key={order.order.o_id} id="invoice" className="page" size="A4">
   <div className="top-padding">
     <section className="top-content bb d-flex justify-content-between">
       <div className="logo-facture">
@@ -482,17 +522,17 @@ const bon = (
     </section>
     <section className="store-user mt-5">
       <div className="col-12 center-elem">
-        <p>Bon De livraison N<sup>°</sup>: <span>#{SelectedOrder.order.o_id}</span></p>
+        <p>Bon De livraison N<sup>°</sup>: <span>#{order.order.o_id}</span></p>
       </div>
       <div className="col-10">
         <div className="row-custom pb-3">
           <div>
             <p>Client,</p>
-            <h2 id="client">{SelectedOrder.client.name}</h2>
+            <h2 id="client">{order.client.name}</h2>
           </div>
           <div>
             <p>Le,</p>
-            <h2>{ (new Date(SelectedOrder.order.date)).getUTCDate()+'-'+((new Date(SelectedOrder.order.date)).getUTCMonth() + 1)+'-'+(new Date(SelectedOrder.order.date)).getUTCFullYear()}</h2>
+            <h2>{ (new Date(order.order.date)).getUTCDate()+'-'+((new Date(order.order.date)).getUTCMonth() + 1)+'-'+(new Date(order.order.date)).getUTCFullYear()}</h2>
           </div>
         </div>
       </div>
@@ -508,7 +548,7 @@ const bon = (
           </tr>
         </thead>
         <tbody>
-          {SelectedOrder.details.map((e) => {
+          {order.details.map((e) => {
             return (
 <tr>
             <td>{e.quantity}</td>
@@ -532,7 +572,7 @@ const bon = (
             <td />
             <td />
             <td className="bord">Total HT:</td>
-            <td className="bord">{SelectedOrder.order.total}DH</td>
+            <td className="bord">{order.order.total}DH</td>
           </tr>
         </tfoot>
       </table>
@@ -578,8 +618,9 @@ const bon = (
     </footer>
   </div>
 </div>
-
-)
+    )
+  })
+  
 
 const fac_avoir = (
   <div id="invoice" className="page" size="A4">
@@ -726,8 +767,9 @@ const fac_avoir = (
 
 );
 
-const template = (
-  <div id="invoice" className="page" size="A4">
+const template = SelectedOrder.map(order => {
+  return (
+    <div id="invoice" className="page" size="A4">
   <div className='top-padding'>
     <section className="top-content bb d-flex justify-content-between">
       <div className="logo-facture">
@@ -742,17 +784,17 @@ const template = (
     </section>
     <section className="store-user mt-5">
       <div className="col-12 center-elem">
-        <p>Facture N<sup>°</sup>: <span>#{SelectedOrder.order.o_id}</span></p>
+        <p>Facture N<sup>°</sup>: <span>#{order.order.o_id}</span></p>
       </div>
       <div className="col-10">
         <div className="row-custom pb-3">
           <div>
             <p>Client,</p>
-            <h2 id="client">{SelectedOrder.client.name}</h2>
+            <h2 id="client">{order.client.name}</h2>
           </div>
           <div>
             <p>Le,</p>
-            <h2>{ (new Date(SelectedOrder.order.date)).getUTCDate()+'-'+((new Date(SelectedOrder.order.date)).getUTCMonth() + 1)+'-'+(new Date(SelectedOrder.order.date)).getUTCFullYear()}</h2>
+            <h2>{ (new Date(order.order.date)).getUTCDate()+'-'+((new Date(order.order.date)).getUTCMonth() + 1)+'-'+(new Date(order.order.date)).getUTCFullYear()}</h2>
           </div>
         </div>
       </div>
@@ -768,7 +810,7 @@ const template = (
           </tr>
         </thead>
         <tbody>
-          {SelectedOrder.details.map((e) => {
+          {order.details.map((e) => {
             return (
 <tr>
             <td>{e.quantity}</td>
@@ -791,19 +833,19 @@ const template = (
             <td />
             <td />
             <td>Total HT:</td>
-            <td>{SelectedOrder.order.total}DH</td>
+            <td>{order.order.total}DH</td>
           </tr>
           <tr>
             <td />
             <td />
             <td>TVA 20%:</td>
-            <td>{SelectedOrder.order.total * 20 / 100}DH</td>
+            <td>{order.order.total * 20 / 100}DH</td>
           </tr>
           <tr>
             <td />
             <td />
             <td className="bord">Total TTC:</td>
-            <td className="bord">{SelectedOrder.order.total + (SelectedOrder.order.total * 20 / 100)}DH</td>
+            <td className="bord">{order.order.total + (order.order.total * 20 / 100)}DH</td>
           </tr>
         </tfoot>
       </table>
@@ -868,12 +910,15 @@ const template = (
     </footer>
   </div>
 </div>
+  )
+})
+  
 
-)
+
 
   const DataTable = (
 	<Fragment>
-    {SelectedOrder.order.id ? <div id="exportPdf" >
+    {SelectedOrder[0].order.o_id? <div id="exportPdf" >
     <Preview id={'jsx-template-2'} >
     {bon}
     </Preview>
