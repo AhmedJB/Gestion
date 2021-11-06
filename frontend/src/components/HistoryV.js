@@ -504,6 +504,10 @@ async function filterID(v){
   }
 }
 
+function round(num){
+  return Math.round((num+Number.EPSILON)* 100)/ 100
+}
+
 
 const bon = SelectedOrder.map(order => {
     return (
@@ -572,7 +576,7 @@ const bon = SelectedOrder.map(order => {
             <td />
             <td />
             <td className="bord">Total HT:</td>
-            <td className="bord">{order.order.total}DH</td>
+            <td className="bord">{ round(order.order.total) }DH</td>
           </tr>
         </tfoot>
       </table>
@@ -687,19 +691,19 @@ const fac_avoir = (
             <td />
             <td />
             <td>Total HT:</td>
-            <td>{DeletedOrder.order.total}DH</td>
+            <td>{round(DeletedOrder.order.total)}DH</td>
           </tr>
           <tr>
             <td />
             <td />
             <td>TVA 20%:</td>
-            <td>{DeletedOrder.order.total * 20 / 100}DH</td>
+            <td>{round(DeletedOrder.order.total * 20 / 100)}DH</td>
           </tr>
           <tr>
             <td />
             <td />
             <td className="bord">Total TTC:</td>
-            <td className="bord">{DeletedOrder.order.total + (DeletedOrder.order.total * 20 / 100)}DH</td>
+            <td className="bord">{round(DeletedOrder.order.total + (DeletedOrder.order.total * 20 / 100))}DH</td>
           </tr>
         </tfoot>
       </table>
@@ -833,19 +837,19 @@ const template = SelectedOrder.map(order => {
             <td />
             <td />
             <td>Total HT:</td>
-            <td>{order.order.total}DH</td>
+            <td>{round(order.order.total)}DH</td>
           </tr>
           <tr>
             <td />
             <td />
             <td>TVA 20%:</td>
-            <td>{order.order.total * 20 / 100}DH</td>
+            <td>{round(order.order.total * 20 / 100)}DH</td>
           </tr>
           <tr>
             <td />
             <td />
             <td className="bord">Total TTC:</td>
-            <td className="bord">{order.order.total + (order.order.total * 20 / 100)}DH</td>
+            <td className="bord">{round(order.order.total + (order.order.total * 20 / 100))}DH</td>
           </tr>
         </tfoot>
       </table>
